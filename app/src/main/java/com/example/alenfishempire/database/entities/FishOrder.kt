@@ -9,7 +9,7 @@ import java.io.Serializable
 data class FishOrder (
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "fishOrderId")
-    val id: Long,
+    var id: Long,
     @ColumnInfo(name = "fishInOrderId")
     val fishId: Long,
     @ColumnInfo(name = "fishOrderQuantity")

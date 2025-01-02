@@ -13,15 +13,21 @@ interface FishDao {
     @Query("SELECT * FROM Fish")
     suspend fun getAllFish(): List<Fish>
 
+    @Query("SELECT * FROM FishOrder Where fishOrderId = :id")
+    suspend fun getFishOrderById(id : Long): FishOrder
+
+    @Query("SELECT * FROM Fish Where fishId = :id")
+    suspend fun getFishById(id : Long): Fish
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertFish(fish: Fish)
 
 
     @Insert
-    suspend fun insertFishOrder(fishOrder: FishOrder)
+    suspend fun insertFishOrder(fishOrder: FishOrder) : Long
 
     @Insert
-    suspend fun insertOrder(order: Order)
+    suspend fun insertOrder(order: Order) : Long
 
     suspend fun insertInitialData() {
         insertFish(Fish(1, "crvena neonka", 1.0f))

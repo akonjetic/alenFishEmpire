@@ -13,7 +13,7 @@ import java.util.Date
 data class Order (
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "orderId")
-    val id: Long,
+    var id: Long,
     @ColumnInfo(name = "orderDate")
     @TypeConverters(DateConverter::class)
     val date: Date,
