@@ -1,5 +1,6 @@
 package com.example.alenfishempire.activity
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.media.MediaScannerConnection
 import android.os.Bundle
@@ -35,13 +36,14 @@ import com.itextpdf.layout.element.Table
 import com.itextpdf.layout.properties.TextAlignment
 import java.io.File
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
 import java.util.Date
 
 class NewCalculationActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityNewCalculationBinding
     private val viewModel: NewCalculationViewModel by viewModels()
-    val fishNameToObjectMap = mutableMapOf<String, Fish>()
+    private val fishNameToObjectMap = mutableMapOf<String, Fish>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,8 +56,22 @@ class NewCalculationActivity : AppCompatActivity() {
 
         setContentView(view)
 
-        setRowElementIds(binding.editableRow, 0)
+        //setup inicijalnog retka
+        setupInitialRow()
 
+        //setup gumbica
+        binding.sumUpOrder.setOnClickListener {
+            saveOrder()
+        }
+        binding.addRowButton.setOnClickListener {
+            addNewRow()
+        }
+
+
+    }
+
+    private fun setupInitialRow() {
+        setRowElementIds(binding.editableRow, 0)
         val initialRowQuantity = binding.tableLayout.findViewWithTag<EditText>("fishQuantity_0")
         initialRowQuantity.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(
@@ -78,193 +94,99 @@ class NewCalculationActivity : AppCompatActivity() {
 
             override fun afterTextChanged(s: Editable?) {}
         })
-
         val initialIsFree = binding.tableLayout.findViewWithTag<CheckBox>("fishIsFree_0")
-        initialIsFree.setOnCheckedChangeListener { _, isChecked ->
+        initialIsFree.setOnCheckedChangeListener { _, _ ->
             calculateTotalPrice(0)
             calculateGrandTotal()
         }
         calculateGrandTotal()
-
         setupSpinner(binding.fishName, 0)
+    }
 
-        binding.sumUpOrder.setOnClickListener {
-            saveOrder()
-        }
+    private fun addNewRow() {
+        val originalRow = binding.editableRow
 
-        binding.addRowButton.setOnClickListener {
-            // inicijalni red
-            val originalRow = binding.editableRow
+        val newRow = TableRow(this)
+        for (i in 0 until originalRow.childCount) {
+            val newView = when (val view = originalRow.getChildAt(i)) {
+                is Spinner -> Spinner(this).apply {
+                    adapter = view.adapter
+                    setupSpinner(this, binding.tableLayout.childCount - 1)
+                }
 
-            // kopiranje inicijalnog
-            val newRow = TableRow(this)
-            for (i in 0 until originalRow.childCount) {
-                val view = originalRow.getChildAt(i)
-                val newView = when (view) {
-                    is Spinner -> Spinner(this).apply {
-                        adapter = view.adapter
-                        setupSpinner(this, binding.tableLayout.childCount - 1)
-                    }
+                is EditText -> EditText(this).apply {
+                    layoutParams = view.layoutParams
+                    inputType = view.inputType
+                    isFocusable = view.isFocusable
+                    isEnabled = view.isEnabled
+                    addTextChangedListener(object : TextWatcher {
+                        override fun beforeTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            count: Int,
+                            after: Int
+                        ) {
+                        }
 
-                    is EditText -> EditText(this).apply {
-                        layoutParams = view.layoutParams
-                        inputType = view.inputType
-                        isFocusable = view.isFocusable
-                        isEnabled = view.isEnabled
-                        addTextChangedListener(object : TextWatcher {
-                            override fun beforeTextChanged(
-                                s: CharSequence?,
-                                start: Int,
-                                count: Int,
-                                after: Int
-                            ) {
-                            }
+                        override fun onTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            before: Int,
+                            count: Int
+                        ) {
+                            calculateTotalPrice(binding.tableLayout.indexOfChild(newRow))
+                            calculateGrandTotal()
+                        }
 
-                            override fun onTextChanged(
-                                s: CharSequence?,
-                                start: Int,
-                                before: Int,
-                                count: Int
-                            ) {
-                                calculateTotalPrice(binding.tableLayout.indexOfChild(newRow))
-                                calculateGrandTotal()
-                            }
+                        override fun afterTextChanged(s: Editable?) {}
+                    })
+                }
 
-                            override fun afterTextChanged(s: Editable?) {}
-                        })
-                    }
-
-                    is CheckBox -> CheckBox(this).apply {
-                        isChecked = false
-                        layoutParams = view.layoutParams
-                        setOnCheckedChangeListener { _, isChecked ->
-                            calculateTotalPrice(
-                                binding.tableLayout.indexOfChild(
-                                    newRow
-                                )
+                is CheckBox -> CheckBox(this).apply {
+                    isChecked = false
+                    layoutParams = view.layoutParams
+                    setOnCheckedChangeListener { _, _ ->
+                        calculateTotalPrice(
+                            binding.tableLayout.indexOfChild(
+                                newRow
                             )
-                            calculateGrandTotal()
-                        }
-                    }
-
-                    is ImageView -> ImageView(this).apply {
-                        layoutParams = view.layoutParams
-                        setImageResource(R.drawable.ic_delete_row)
-                        setOnClickListener {
-                            binding.tableLayout.removeView(newRow)
-                            reindexRows()
-                            calculateGrandTotal()
-                        }
-                        setPadding(
-                            view.paddingLeft,
-                            view.paddingTop,
-                            view.paddingRight,
-                            view.paddingBottom
                         )
-                    }
-
-                    else -> TextView(this).apply {
-                        text = "0"
-                        layoutParams = view.layoutParams
-                        gravity = view.foregroundGravity
+                        calculateGrandTotal()
                     }
                 }
-                newRow.addView(newView)
+
+                is ImageView -> ImageView(this).apply {
+                    layoutParams = view.layoutParams
+                    setImageResource(R.drawable.ic_delete_row)
+                    setOnClickListener {
+                        binding.tableLayout.removeView(newRow)
+                        reindexRows()
+                        calculateGrandTotal()
+                    }
+                    setPadding(
+                        view.paddingLeft,
+                        view.paddingTop,
+                        view.paddingRight,
+                        view.paddingBottom
+                    )
+                }
+
+                else -> TextView(this).apply {
+                    text = "0"
+                    layoutParams = view.layoutParams
+                    gravity = view.foregroundGravity
+                }
             }
-
-            setRowElementIds(newRow, binding.tableLayout.childCount - 1)
-
-            // dodavanje novog iznad gumba
-            val index = binding.tableLayout.childCount - 1
-            binding.tableLayout.addView(newRow, index)
+            newRow.addView(newView)
         }
 
+        setRowElementIds(newRow, binding.tableLayout.childCount - 1)
 
+        val index = binding.tableLayout.childCount - 1
+        binding.tableLayout.addView(newRow, index)
     }
 
-    private fun exportToPDF(order: Order) {
-        val fileName = "Order_${order.id}.pdf"
-        val downloadDir =
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-        val file = File(downloadDir, fileName)
-
-        val pdfWriter = PdfWriter(FileOutputStream(file))
-        val pdfDoc = PdfDocument(pdfWriter)
-        val document = Document(pdfDoc)
-
-        document.add(Paragraph("Detalji narudzbe").setBold())
-        document.add(Paragraph("ID Narudzbe: ${order.id}"))
-        document.add(Paragraph("Datum: ${order.date}"))
-
-        val table = Table(floatArrayOf(100f, 100f, 100f, 100f, 100f))
-        table.addCell("Vrsta")
-        table.addCell("Kolicina")
-        table.addCell("Gratis")
-        table.addCell("Popust")
-        table.addCell("Ukupno")
-
-        viewModel.fetchFishOrderDetails(this, order.fishOrderId) { detailsList ->
-            detailsList.forEach { details ->
-                val fishOrder = details["fishOrder"] as FishOrder
-                val fish = details["fish"] as Fish
-
-                table.addCell(fish.name).setTextAlignment(TextAlignment.CENTER)
-                table.addCell(fishOrder.quantity.toString()).setTextAlignment(TextAlignment.CENTER)
-                table.addCell(if (fishOrder.isFree) "Da" else "Ne").setTextAlignment(TextAlignment.CENTER)
-                table.addCell(order.discount?.toString() ?: "0%").setTextAlignment(TextAlignment.CENTER)
-                table.addCell((fish.price * fishOrder.quantity.toFloat()).toString()).setTextAlignment(TextAlignment.CENTER)
-            }
-
-            val totalQuantity = order.fishOrderId.sumBy { fishOrderId ->
-                val details = detailsList.find { it["fishOrder"]?.let { fishOrder -> (fishOrder as FishOrder).id == fishOrderId } == true }
-                val fishOrder = details?.get("fishOrder") as? FishOrder
-                fishOrder?.quantity ?: 0
-            }
-
-            val totalPrice = order.fishOrderId.sumByDouble { fishOrderId ->
-                val details = detailsList.find { it["fishOrder"]?.let { fishOrder -> (fishOrder as FishOrder).id == fishOrderId } == true }
-                val fishOrder = details?.get("fishOrder") as? FishOrder
-                val fish = details?.get("fish") as? Fish
-                (fish?.price?.times(fishOrder?.quantity?.toFloat() ?: 0f) ?: 0.0).toDouble()
-            }
-
-            document.add(table)
-            document.add(Paragraph("Ukupna kolicina: $totalQuantity").setBold())
-            document.add(Paragraph("Ukupna cijena: $totalPrice").setBold())
-            document.close()
-
-            MediaScannerConnection.scanFile(
-                this,
-                arrayOf(file.absolutePath),
-                null,
-                null
-            )
-
-            Toast.makeText(this, "Exported to $fileName", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun showExportDialog(order: Order) {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Narudžba spremljena!")
-        builder.setMessage("Želite li exportati narudžbu?")
-
-        builder.setNegativeButton("Export to PDF") { _, _ ->
-            exportToPDF(order)
-        }
-
-        builder.setPositiveButton("OK") { dialog, _ ->
-            dialog.dismiss()
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }
-
-        builder.show()
-    }
-
-
-
-    fun setupSpinner(spinner: Spinner, rowIndex: Int) {
+    private fun setupSpinner(spinner: Spinner, rowIndex: Int) {
         viewModel.listOfAllFish.observe(this) { fishList ->
             Log.d("NewCalculationActivity", "Fish list size: ${fishList.size}")
             fishList.forEach { Log.d("NewCalculationActivity", "Fish name: ${it.name}") }
@@ -279,6 +201,7 @@ class NewCalculationActivity : AppCompatActivity() {
             spinner.adapter = adapter
 
             spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                @SuppressLint("SetTextI18n")
                 override fun onItemSelected(
                     parent: AdapterView<*>,
                     view: View,
@@ -321,6 +244,7 @@ class NewCalculationActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun calculateTotalPrice(rowIndex: Int) {
         val quantityEditText =
             binding.tableLayout.findViewWithTag<EditText>("fishQuantity_$rowIndex")
@@ -341,7 +265,7 @@ class NewCalculationActivity : AppCompatActivity() {
         }
     }
 
-
+    @SuppressLint("SetTextI18n")
     private fun calculateGrandTotal() {
         var grandTotal = 0.0
         var grandTotalQuantity = 0
@@ -353,7 +277,8 @@ class NewCalculationActivity : AppCompatActivity() {
             val totalQuantity = totalQuantiyView?.text?.toString()
 
             grandTotal += if (!totalText.isNullOrEmpty()) totalText.toDoubleOrNull() ?: 0.0 else 0.0
-            grandTotalQuantity += if (!totalQuantity.isNullOrEmpty()) totalQuantity.toIntOrNull() ?: 0 else 0
+            grandTotalQuantity += if (!totalQuantity.isNullOrEmpty()) totalQuantity.toIntOrNull()
+                ?: 0 else 0
         }
         binding.totalAmount.text = grandTotal.toString()
         binding.totalQuantity.text = grandTotalQuantity.toString()
@@ -371,7 +296,7 @@ class NewCalculationActivity : AppCompatActivity() {
         val fishOrderList = mutableListOf<FishOrder>()
         val currentDate = Date()
 
-        for (i in 0 until binding.tableLayout.childCount-1) {
+        for (i in 0 until binding.tableLayout.childCount - 1) {
             val quantityEditText = binding.tableLayout.findViewWithTag<EditText>("fishQuantity_$i")
             val spinner = binding.tableLayout.findViewWithTag<Spinner>("fishName_$i")
             val isFreeCheckBox = binding.tableLayout.findViewWithTag<CheckBox>("fishIsFree_$i")
@@ -390,12 +315,12 @@ class NewCalculationActivity : AppCompatActivity() {
                         quantity = quantity,
                         isFree = isFree
                     )
-                    viewModel.saveNewFishOrder(this, fishOrder) { orderId ->
-                        val newFishOrder = fishOrder.copy(id = orderId)
+                    viewModel.saveNewFishOrder(this, fishOrder) { fishOrderId ->
+                        val newFishOrder = fishOrder.copy(id = fishOrderId)
                         fishOrderList.add(newFishOrder)
 
                         // Nakon što su svi FishOrder objekti dodani, nastavi s dodavanjem Ordera
-                        if (fishOrderList.size == binding.tableLayout.childCount-2) {
+                        if (fishOrderList.size == binding.tableLayout.childCount - 2) {
                             val fishOrderIds = fishOrderList.map { it.id }
                             val order = Order(
                                 id = 0,  // Auto-generated
@@ -407,17 +332,109 @@ class NewCalculationActivity : AppCompatActivity() {
                                 order.id = orderId
                             }
                             showExportDialog(order)
-                        }
-                        else {
-                            Log.d("NewCalculationActivity", "Nisam jos za spremanje, sad sam na: " + fishOrderList.size + "a trebam biti na: " + (binding.tableLayout.childCount-1))
+                        } else {
+                            Log.d(
+                                "NewCalculationActivity",
+                                "Nisam jos za spremanje, sad sam na: " + fishOrderList.size + "a trebam biti na: " + (binding.tableLayout.childCount - 1)
+                            )
                         }
                     }
                 }
             }
         }
-
-
     }
 
+    private fun showExportDialog(order: Order) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Narudžba spremljena!")
+        builder.setMessage("Želite li exportati narudžbu?")
 
+        builder.setNegativeButton("Spremi u PDF") { _, _ ->
+            exportToPDF(order)
+        }
+
+        builder.setPositiveButton("Ne, hvala") { dialog, _ ->
+            dialog.dismiss()
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
+
+        builder.show()
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    private fun exportToPDF(order: Order) {
+        val fileName = "Order_${order.id}.pdf"
+        val downloadDir =
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+        val file = File(downloadDir, fileName)
+
+        val pdfWriter = PdfWriter(FileOutputStream(file))
+        val pdfDoc = PdfDocument(pdfWriter)
+        val document = Document(pdfDoc)
+
+        val dateFormat = SimpleDateFormat("dd-MM-yyyy, HH:mm:ss") // Koristi "HH" za 24-satni format
+
+        val formattedDate = dateFormat.format(order.date)
+
+        document.add(Paragraph("Detalji narudzbe").setBold())
+        document.add(Paragraph("ID narudzbe: ${order.id}"))
+        document.add(Paragraph("Datum: $formattedDate"))
+
+        document.add(Paragraph())
+        document.add(Paragraph())
+
+        val table = Table(floatArrayOf(100f, 100f, 100f, 100f, 100f))
+        table.addHeaderCell("Vrsta").setBold()
+        table.addHeaderCell("Kolicina").setBold()
+        table.addHeaderCell("Cijena/Komad (€)").setBold()
+        table.addHeaderCell("Gratis").setBold()
+        table.addHeaderCell("Ukupno (€)").setBold()
+
+        viewModel.fetchFishOrderDetails(this, order.fishOrderId) { detailsList ->
+            detailsList.forEach { details ->
+                val fishOrder = details["fishOrder"] as FishOrder
+                val fish = details["fish"] as Fish
+
+                table.addCell(fish.name).setTextAlignment(TextAlignment.CENTER)
+                table.addCell(fishOrder.quantity.toString()).setTextAlignment(TextAlignment.CENTER)
+                table.addCell(fish.price.toString()).setTextAlignment(TextAlignment.CENTER)
+                table.addCell(if (fishOrder.isFree) "Da" else "Ne")
+                    .setTextAlignment(TextAlignment.CENTER)
+                table.addCell(if (fishOrder.isFree) "/" else (fish.price * fishOrder.quantity.toFloat()).toString())
+                    .setTextAlignment(TextAlignment.CENTER)
+            }
+
+            val totalQuantity = order.fishOrderId.sumOf { fishOrderId ->
+                val details =
+                    detailsList.find { it["fishOrder"]?.let { fishOrder -> (fishOrder as FishOrder).id == fishOrderId } == true }
+                val fishOrder = details?.get("fishOrder") as? FishOrder
+                fishOrder?.quantity ?: 0
+            }
+
+            val totalPrice = order.fishOrderId.sumOf { fishOrderId ->
+                val details =
+                    detailsList.find { it["fishOrder"]?.let { fishOrder -> (fishOrder as FishOrder).id == fishOrderId } == true }
+                val fishOrder = details?.get("fishOrder") as? FishOrder
+                val fish = details?.get("fish") as? Fish
+                if(fishOrder?.isFree == true){0.0} else{(fish?.price?.times(fishOrder?.quantity?.toFloat() ?: 0f) ?: 0.0).toDouble()}
+            }
+
+            document.add(table)
+            document.add(Paragraph())
+            document.add(Paragraph())
+            document.add(Paragraph("Ukupna kolicina: $totalQuantity").setBold())
+            document.add(Paragraph("Ukupna cijena (€): $totalPrice").setBold())
+            document.close()
+
+            MediaScannerConnection.scanFile(
+                this,
+                arrayOf(file.absolutePath),
+                null,
+                null
+            )
+
+            Toast.makeText(this, "Exported to $fileName", Toast.LENGTH_SHORT).show()
+        }
+    }
 }
