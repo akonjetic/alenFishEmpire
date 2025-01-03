@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Alen\'s Fish Empire</string>
+    <string name="title_activity_order_history">OrderHistoryActivity</string>
 </resources>

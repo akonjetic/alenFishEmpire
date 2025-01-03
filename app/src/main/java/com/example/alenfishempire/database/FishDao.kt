@@ -22,6 +22,8 @@ interface FishDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertFish(fish: Fish)
 
+    @Query("Select * from 'Order' Order By orderId DESC")
+    suspend fun getAllOrdersDesc() : List<Order>
 
     @Insert
     suspend fun insertFishOrder(fishOrder: FishOrder) : Long

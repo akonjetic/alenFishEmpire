@@ -22,6 +22,11 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        binding.orderHistoryCard.setOnClickListener {
+            val intent = Intent(this, OrderHistoryActivity::class.java)
+            startActivity(intent)
+        }
+
 
     }
 }
