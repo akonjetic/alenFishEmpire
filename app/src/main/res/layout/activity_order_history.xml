@@ -32,7 +32,56 @@
             android:layout_toEndOf="@id/logo"
             android:layout_centerVertical="true"
             android:layout_marginStart="10dp" />
+
+        <ImageView
+            android:id="@+id/homeIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_home"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:contentDescription="Home Icon"/>
     </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/filterLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        android:gravity="center_vertical">
+
+        <!-- Month Filter -->
+        <Spinner
+            android:id="@+id/monthFilter"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/card_background"
+            android:paddingHorizontal="8dp"
+            android:entries="@array/months"/>
+
+        <!-- Year Filter -->
+        <Spinner
+            android:id="@+id/yearFilter"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/card_background"
+            android:paddingHorizontal="8dp"
+            android:entries="@array/years"/>
+
+        <!-- Sort by Spinner -->
+        <Spinner
+            android:id="@+id/sortSpinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/card_background"
+            android:paddingHorizontal="8dp"
+            android:entries="@array/sort_options"/>
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/ordersRecyclerView"
@@ -40,7 +89,7 @@
         android:layout_height="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintTop_toBottomOf="@id/filterLayout"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

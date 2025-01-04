@@ -23,3 +23,13 @@ data class Order (
     @ColumnInfo(name = "fishOrderIsFree")
     val discount: Float?
 ) : Serializable
+
+
+data class OrderWithDetails(
+    val id: Long,
+    val date: Date,
+    val fishOrderId: List<Long>,
+    val discount: Float?,
+    val totalPrice: Float,
+    val totalQuantity: Int
+)

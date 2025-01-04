@@ -39,6 +39,9 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 
+const val EXTRA_IS_READ_ONLY = "READ_ONLY"
+const val EXTRA_ORDER = "ORDER"
+
 class NewCalculationActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityNewCalculationBinding
@@ -56,15 +59,29 @@ class NewCalculationActivity : AppCompatActivity() {
 
         setContentView(view)
 
-        //setup inicijalnog retka
-        setupInitialRow()
+        val isReadOnly = intent.getBooleanExtra(EXTRA_IS_READ_ONLY, false)
+        val order = intent.getSerializableExtra(EXTRA_ORDER) as? Order
 
-        //setup gumbica
-        binding.sumUpOrder.setOnClickListener {
-            saveOrder()
+        if (isReadOnly) {
+            binding.addRowButton.visibility = View.GONE
+            binding.sumUpOrder.visibility = View.GONE
+            binding.editableRow.visibility = View.GONE
+        } else {
+            //setup inicijalnog retka
+            setupInitialRow()
+
+            //setup gumbica
+            binding.sumUpOrder.setOnClickListener {
+                saveOrder()
+            }
+            binding.addRowButton.setOnClickListener {
+                addNewRow()
+            }
         }
-        binding.addRowButton.setOnClickListener {
-            addNewRow()
+
+        binding.homeIcon.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
         }
 
 
@@ -184,6 +201,11 @@ class NewCalculationActivity : AppCompatActivity() {
 
         val index = binding.tableLayout.childCount - 1
         binding.tableLayout.addView(newRow, index)
+    }
+
+    private fun setupReadOnlyTable (order: Order){
+
+
     }
 
     private fun setupSpinner(spinner: Spinner, rowIndex: Int) {
