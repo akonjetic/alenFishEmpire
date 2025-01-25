@@ -1,7 +1,8 @@
 package com.example.alenfishempire.activity
 
-import DatabaseBackupWorker
-import GoogleDriveHelper
+import android.accounts.AccountManager
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -9,11 +10,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.alenfishempire.databinding.ActivityMainBinding
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.services.drive.DriveScopes
 import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,7 +29,6 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(view)
 
-        setupPeriodicBackup()
 
         binding.newCalculationCard.setOnClickListener {
             val intent = Intent(this, NewCalculationActivity::class.java)
@@ -40,25 +45,8 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        binding.btnRestoreDatabase.setOnClickListener {
-            val googleDriveHelper = GoogleDriveHelper(this)
-            val driveService = googleDriveHelper.authenticate()
-
-            // ID datoteke na Google Driveu (ručno ili dinamički)
-            val driveFileId = "your_drive_file_id" // Postavi stvarni ID
-            val localPath = getDatabasePath("FishDatabase.db").absolutePath
-
-            googleDriveHelper.downloadFile(driveFileId, localPath)
-            Toast.makeText(this, "Database restored from Google Drive", Toast.LENGTH_SHORT).show()
-        }
 
     }
 
-    private fun setupPeriodicBackup() {
-        val backupWorkRequest = PeriodicWorkRequestBuilder<DatabaseBackupWorker>(
-            1, TimeUnit.DAYS // Backup svaki dan
-        ).build()
 
-        WorkManager.getInstance(this).enqueue(backupWorkRequest)
-    }
 }
