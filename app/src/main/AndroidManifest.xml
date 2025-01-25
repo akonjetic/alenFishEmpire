@@ -20,6 +20,11 @@
             android:label="@string/title_activity_order_history"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
+        android:name=".activity.AdministrationActivity"
+        android:exported="false"
+        android:label="@string/title_activity_order_history"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity
             android:name=".activity.MainActivity"
             android:exported="true"
             android:label="@string/app_name"

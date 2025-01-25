@@ -27,6 +27,9 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-
+        binding.administrationCard.setOnClickListener {
+            val intent = Intent(this, AdministrationActivity::class.java)
+            startActivity(intent)
+        }
     }
 }

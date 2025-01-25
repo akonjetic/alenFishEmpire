@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.example.alenfishempire.database.entities.Fish
 import com.example.alenfishempire.database.entities.FishOrder
 import com.example.alenfishempire.database.entities.Order
@@ -77,11 +78,16 @@ interface FishDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertFish(fish: Fish)
 
+
     @Insert
     suspend fun insertFishOrder(fishOrder: FishOrder) : Long
 
     @Insert
     suspend fun insertOrder(order: Order) : Long
+
+
+    @Update
+    suspend fun updateFish(fish: Fish)
 
     suspend fun insertInitialData() {
         insertFish(Fish(1, "crvena neonka", 1.0f))

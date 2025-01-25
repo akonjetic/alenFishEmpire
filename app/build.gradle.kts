@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.room.common)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.runner)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -68,5 +69,6 @@ dependencies {
     kapt(libs.androidx.databinding.compiler)
     ksp(libs.androidx.room.compiler)
     implementation (libs.itext7.core)
-
+    implementation(libs.androidx.fragment.ktx)
+    implementation(libs.material)
 }

@@ -51,7 +51,7 @@
             android:gravity="center"
             android:orientation="vertical"
             android:padding="16dp"
-            app:layout_constraintBottom_toTopOf="@id/card3"
+            app:layout_constraintBottom_toTopOf="@id/administrationCard"
             app:layout_constraintEnd_toStartOf="@id/orderHistoryCard"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -101,13 +101,12 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/card3"
+            android:id="@+id/administrationCard"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_margin="8dp"
             android:background="@drawable/card_background"
             android:gravity="center"
-            android:onClick="goToActivity3"
             android:orientation="vertical"
             android:padding="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -125,7 +124,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Card 3"
+                android:text="Administracija"
                 android:textColor="@android:color/black"
                 android:textSize="18sp" />
         </LinearLayout>
@@ -142,7 +141,7 @@
             android:padding="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/card3"
+            app:layout_constraintStart_toEndOf="@id/administrationCard"
             app:layout_constraintTop_toBottomOf="@id/orderHistoryCard">
 
             <ImageView

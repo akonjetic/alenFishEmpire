@@ -1,0 +1,65 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/dialog_background">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Edit Fish"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:paddingBottom="16dp" />
+
+    <EditText
+        android:id="@+id/etFishName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Fish Name"
+        android:background="@drawable/edit_text_background"
+        android:padding="12dp" />
+
+    <EditText
+        android:id="@+id/etFishPrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Fish Price"
+        android:background="@drawable/edit_text_background"
+        android:padding="12dp"
+        android:layout_marginTop="8dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:layout_marginTop="16dp">
+
+        <Button
+            android:id="@+id/btnDeleteFish"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete"
+            android:backgroundTint="@android:color/holo_red_dark" />
+
+        <Button
+            android:id="@+id/btnClose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Close"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="@android:color/darker_gray" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnSaveFish"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:backgroundTint="@android:color/holo_green_dark"
+        android:layout_marginTop="16dp" />
+</LinearLayout>
