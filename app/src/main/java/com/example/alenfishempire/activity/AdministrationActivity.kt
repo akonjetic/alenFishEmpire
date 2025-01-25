@@ -33,6 +33,11 @@ class AdministrationActivity : AppCompatActivity(){
 
         setContentView(view)
 
+        binding.fabAddFish.setOnClickListener {
+            val fragment = EditFishFragment.newInstance(null)
+            fragment.show(this.supportFragmentManager, "EditFishFragment")
+        }
+
         binding.homeIcon.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
@@ -40,11 +45,11 @@ class AdministrationActivity : AppCompatActivity(){
 
     }
 
-    private fun openEditFishFragment(fish: Fish) {
+    private fun openEditFishFragment(fish: Fish?) {
         val fragment = EditFishFragment.newInstance(fish)
         supportFragmentManager.beginTransaction()
-            .replace(android.R.id.content, fragment) // Prikaz fragmenta
-            .addToBackStack(null) // Dodavanje na backstack
+            .replace(android.R.id.content, fragment)
+            .addToBackStack(null)
             .commit()
     }
 }

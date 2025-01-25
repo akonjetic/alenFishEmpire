@@ -2,8 +2,21 @@
 agp = "8.7.3"
 compiler = "8.1.0"
 databindingCompiler = "8.7.3"
+firebaseBom = "32.2.2"
+firebaseCore = "21.1.1"
 fragmentKtx = "1.6.2"
+googleApiClient = "2.7.2"
+googleApiClientAndroid = "1.33.2"
+googleApiClientAndroidVersion = "1.34.0"
+googleApiServicesDrive = "v3-rev20230831-2.0.0"
+googleApiServicesDriveVersion = "v3-rev20250122-2.0.0"
+googleGoogleApiClientAndroid = "1.34.0="
+googleHttpClientJackson2 = "1.43.2"
+googleServices = "4.4.2"
+googleServicesVersion = "4.4.2"
 itext7Core = "7.2.5"
+jacksonCore = "2.15.0"
+jacksonDatabind = "2.15.0"
 kotlin = "2.0.0"
 coreKtx = "1.10.1"
 junit = "4.13.2"
@@ -15,18 +28,34 @@ composeBom = "2024.04.01"
 appcompat = "1.7.0"
 constraintlayout = "2.2.0"
 material = "1.12.0"
+playServicesAuth = "21.3.0"
+playServicesAuthVersion = "21.3.0"
+playServicesDrive = "18.0.1"
+playServicesDriveVersion = "17.0.0"
 roomCommon = "2.6.1"
 roomCompiler = "2.5.0"
 roomKtx = "2.6.1"
 runner = "1.5.2"
+workRuntimeKtx = "2.10.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-databinding-compiler = { module = "androidx.databinding:databinding-compiler", version.ref = "databindingCompiler" }
 androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
+client-google-api-client-android = { module = "com.google.api.client:google-api-client-android", version.ref = "googleGoogleApiClientAndroid" }
 compiler = { module = "com.android.databinding:compiler", version.ref = "compiler" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-core = { module = "com.google.firebase:firebase-core", version.ref = "firebaseCore" }
+firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx" }
+google-api-client = { module = "com.google.api-client:google-api-client", version.ref = "googleApiClient" }
+google-api-client-android = { module = "com.google.api-client:google-api-client-android", version.ref = "googleApiClientAndroid" }
+google-api-client-android-v1340 = { module = "com.google.api-client:google-api-client-android", version.ref = "googleApiClientAndroidVersion" }
+google-api-services-drive = { module = "com.google.apis:google-api-services-drive", version.ref = "googleApiServicesDriveVersion" }
+google-http-client-jackson2 = { module = "com.google.http-client:google-http-client-jackson2", version.ref = "googleHttpClientJackson2" }
 itext7-core = { module = "com.itextpdf:itext7-core", version.ref = "itext7Core" }
+jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jacksonCore" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jacksonDatabind" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -46,6 +75,9 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuthVersion" }
+play-services-drive = { module = "com.google.android.gms:play-services-drive", version.ref = "playServicesDriveVersion" }
+androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workRuntimeKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

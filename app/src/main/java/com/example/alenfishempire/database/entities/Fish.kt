@@ -15,3 +15,8 @@ data class Fish (
     @ColumnInfo(name = "fishPrice")
     val price: Float
 ) : Serializable
+
+data class FishDTO(
+    val name: String,
+    val price: Float
+)

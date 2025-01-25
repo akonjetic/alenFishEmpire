@@ -59,6 +59,8 @@
         android:contentDescription="Add new fish"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="24dp"
+        app:maxImageSize="56dp"
         app:srcCompat="@drawable/ic_fish_net" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

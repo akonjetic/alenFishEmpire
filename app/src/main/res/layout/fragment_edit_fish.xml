@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Edit Fish"
+        android:text="Fish Details"
         android:textSize="20sp"
         android:textStyle="bold"
         android:layout_gravity="center"
@@ -28,6 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Fish Price"
+        android:inputType="numberDecimal"
         android:background="@drawable/edit_text_background"
         android:padding="12dp"
         android:layout_marginTop="8dp" />
@@ -36,30 +37,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="end"
         android:layout_marginTop="16dp">
 
         <Button
             android:id="@+id/btnDeleteFish"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_marginEnd="64dp"
             android:text="Delete"
             android:backgroundTint="@android:color/holo_red_dark" />
 
         <Button
-            android:id="@+id/btnClose"
-            android:layout_width="wrap_content"
+            android:id="@+id/btnSaveFish"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Close"
-            android:layout_marginStart="8dp"
-            android:backgroundTint="@android:color/darker_gray" />
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_marginStart="64dp"
+            android:text="Save"
+            android:backgroundTint="@android:color/holo_green_dark" />
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btnSaveFish"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Save"
-        android:backgroundTint="@android:color/holo_green_dark"
-        android:layout_marginTop="16dp" />
 </LinearLayout>

@@ -1,19 +1,26 @@
 plugins {
+    id("com.google.devtools.ksp")
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("kotlin-kapt")
-    id("com.google.devtools.ksp")
 }
 
 android {
     namespace = "com.example.alenfishempire"
-    compileSdk = 34
+    compileSdk = 35
+
+    packaging {
+        resources {
+            excludes.add("META-INF/DEPENDENCIES")
+            excludes.add("META-INF/INDEX.LIST")
+        }
+    }
 
     defaultConfig {
         applicationId = "com.example.alenfishempire"
         minSdk = 34
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -44,6 +51,17 @@ android {
 }
 
 dependencies {
+    implementation (libs.play.services.auth)
+    implementation(libs.google.api.client.android)
+    implementation (libs.play.services.drive)
+
+    implementation (libs.google.api.services.drive)
+    implementation (libs.google.api.client)
+    implementation (libs.google.api.client.android.v1340)
+
+    implementation (libs.jackson.databind)
+    implementation (libs.jackson.core)
+    implementation(libs.google.http.client.jackson2)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -59,6 +77,8 @@ dependencies {
     implementation(libs.androidx.room.common)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.runner)
+    implementation(libs.androidx.espresso.core)
+    implementation(libs.androidx.work.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -71,4 +91,8 @@ dependencies {
     implementation (libs.itext7.core)
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.material)
+
+    implementation (platform(libs.firebase.bom))
+    implementation (libs.firebase.auth.ktx)
+    implementation (libs.firebase.core)
 }

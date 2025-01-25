@@ -22,6 +22,14 @@ class FishListAdapter(
     private val onFishClick: (Fish) -> Unit
     ): RecyclerView.Adapter<FishListAdapter.FishListViewHolder>() {
 
+    private val fishIcons = listOf(
+        R.drawable.ic_aqua_icon1,
+        R.drawable.ic_aqua_icon2,
+        R.drawable.ic_aqua_icon3,
+        R.drawable.ic_aqua_icon4,
+        R.drawable.ic_aqua_icon5
+    )
+
     class FishListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val binding = FishListItemBinding.bind(view)
     }
@@ -49,6 +57,9 @@ class FishListAdapter(
         val currentItemBinding = holder.binding
         currentItemBinding.tvFishName.text = currentItem.name
         currentItemBinding.tvFishPrice.text = currentItem.price.toString()
+
+        val iconResId = fishIcons[position % fishIcons.size]
+        currentItemBinding.ivFishIcon.setImageResource(iconResId)
 
         holder.itemView.setOnClickListener {
             val fragment = EditFishFragment.newInstance(currentItem)

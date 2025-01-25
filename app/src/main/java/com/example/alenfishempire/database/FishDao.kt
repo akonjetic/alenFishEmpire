@@ -2,11 +2,13 @@ package com.example.alenfishempire.database
 
 import android.util.Log
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.alenfishempire.database.entities.Fish
+import com.example.alenfishempire.database.entities.FishDTO
 import com.example.alenfishempire.database.entities.FishOrder
 import com.example.alenfishempire.database.entities.Order
 import com.example.alenfishempire.database.entities.OrderWithDetails
@@ -88,6 +90,10 @@ interface FishDao {
 
     @Update
     suspend fun updateFish(fish: Fish)
+
+
+    @Delete
+    suspend fun deleteFish(fish: Fish)
 
     suspend fun insertInitialData() {
         insertFish(Fish(1, "crvena neonka", 1.0f))

@@ -7,6 +7,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.appcompat.app.AlertDialog
 import com.example.alenfishempire.activity.viewmodel.AdministrationViewModel
 import com.example.alenfishempire.database.entities.Fish
+import com.example.alenfishempire.database.entities.FishDTO
 import com.example.alenfishempire.databinding.FragmentEditFishBinding
 
 class EditFishFragment : DialogFragment() {
@@ -32,34 +33,56 @@ class EditFishFragment : DialogFragment() {
         fish?.let {
             binding.etFishName.setText(it.name)
             binding.etFishPrice.setText(it.price.toString())
-        }
 
-        binding.btnSaveFish.setOnClickListener {
-            val name = binding.etFishName.text.toString()
-            val price = binding.etFishPrice.text.toString().toFloatOrNull()
+            binding.btnSaveFish.setOnClickListener {
+                val name = binding.etFishName.text.toString()
+                val price = binding.etFishPrice.text.toString().toFloatOrNull()
 
-            if (name.isNotEmpty() && price != null) {
-                val updatedFish = fish?.copy(name = name, price = price)
-                updatedFish?.let { fishToUpdate ->
-                    viewModel.updateFish(requireContext(), fishToUpdate)
+                if (name.isNotEmpty() && price != null) {
+                    val updatedFish = fish?.copy(name = name, price = price)
+                    updatedFish?.let { fishToUpdate ->
+                        viewModel.updateFish(requireContext(), fishToUpdate)
+                    }
+                    viewModel.fetchAllFish(requireContext())
+                    dismiss()
+                } else {
+                    binding.etFishName.error = "Name cannot be empty"
+                    binding.etFishPrice.error = "Price must be a valid number"
                 }
-                dismiss() // Zatvara dijalog nakon spremanja
-            } else {
-                binding.etFishName.error = "Name cannot be empty"
-                binding.etFishPrice.error = "Price must be a valid number"
+            }
+
+        } ?: run {
+            binding.etFishName.text.clear()
+            binding.etFishPrice.text.clear()
+
+            binding.btnSaveFish.setOnClickListener {
+                val name = binding.etFishName.text.toString()
+                val price = binding.etFishPrice.text.toString().toFloatOrNull()
+
+                if (name.isNotEmpty() && price != null) {
+                    val newFish = Fish(name = name, price = price, id = 0)
+                    newFish.let { nf ->
+                        viewModel.saveNewFish(requireContext(), nf)
+                    }
+                    viewModel.fetchAllFish(requireContext())
+                    dismiss()
+                } else {
+                    binding.etFishName.error = "Name cannot be empty"
+                    binding.etFishPrice.error = "Price must be a valid number"
+                }
             }
         }
 
+
+
         binding.btnDeleteFish.setOnClickListener {
-         /*   fish?.let { fishToDelete ->
+            fish?.let { fishToDelete ->
                 viewModel.deleteFish(requireContext(), fishToDelete)
-            }*/
-            dismiss() // Zatvara dijalog nakon brisanja
+            }
+            viewModel.fetchAllFish(requireContext())
+            dismiss()
         }
 
-        binding.btnClose.setOnClickListener {
-            dismiss() // Zatvara dijalog bez promjena
-        }
 
         val dialog = AlertDialog.Builder(requireActivity())
             .setView(binding.root)
