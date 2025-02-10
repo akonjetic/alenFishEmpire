@@ -29,7 +29,6 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(view)
 
-
         binding.newCalculationCard.setOnClickListener {
             val intent = Intent(this, NewCalculationActivity::class.java)
             startActivity(intent)
@@ -45,7 +44,10 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-
+        binding.statsCard.setOnClickListener {
+            val intent = Intent(this, StatsActivity::class.java)
+            startActivity(intent)
+        }
     }
 
 

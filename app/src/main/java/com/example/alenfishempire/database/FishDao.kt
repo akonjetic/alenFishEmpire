@@ -10,6 +10,7 @@ import androidx.room.Update
 import com.example.alenfishempire.database.entities.Fish
 import com.example.alenfishempire.database.entities.FishDTO
 import com.example.alenfishempire.database.entities.FishOrder
+import com.example.alenfishempire.database.entities.FishSalesStats
 import com.example.alenfishempire.database.entities.Order
 import com.example.alenfishempire.database.entities.OrderWithDetails
 import java.util.Date
@@ -95,6 +96,23 @@ interface FishDao {
     @Delete
     suspend fun deleteFish(fish: Fish)
 
+    @Query("""
+        SELECT Fish.fishName AS fishName, SUM(FishOrder.fishOrderQuantity) AS totalQuantity, 
+        SUM(FishOrder.fishOrderQuantity * Fish.fishPrice) AS totalSales, 
+        COUNT(FishOrder.fishOrderIsFree) AS totalFree 
+        FROM FishOrder 
+        JOIN Fish ON FishOrder.fishInOrderId = Fish.fishId
+        WHERE FishOrder.fishOrderIsFree = 1 
+        GROUP BY Fish.fishId
+    """)
+    suspend fun getTotalFishSalesByType(): List<FishSalesStats>
+
+    @Query("SELECT SUM(fishOrderQuantity * fishPrice) FROM FishOrder JOIN Fish ON FishOrder.fishInOrderId = Fish.fishId")
+    suspend fun getTotalSales(): Float
+
+    @Query("SELECT SUM(fishOrderQuantity) FROM FishOrder WHERE fishOrderIsFree = 1")
+    suspend fun getTotalFreeFish(): Int
+
     suspend fun insertInitialData() {
         insertFish(Fish(1, "crvena neonka", 1.0f))
         insertFish(Fish(2, "bakrena tetra", 1.0f))
@@ -102,6 +120,8 @@ interface FishDao {
         insertFish(Fish(4, "plamena tetra", 1.0f))
 
     }
+
+
 }
 
 data class OrderDate(

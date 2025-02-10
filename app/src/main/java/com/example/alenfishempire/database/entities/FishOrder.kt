@@ -17,3 +17,10 @@ data class FishOrder (
     @ColumnInfo(name = "fishOrderIsFree")
     val isFree: Boolean
 ) : Serializable
+
+data class FishSalesStats(
+    val fishName: String,
+    val totalQuantity: Int,
+    val totalSales: Float,
+    val totalFree: Int
+)

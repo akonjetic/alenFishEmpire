@@ -28,6 +28,7 @@ composeBom = "2024.04.01"
 appcompat = "1.7.0"
 constraintlayout = "2.2.0"
 material = "1.12.0"
+materialVersion = "3.14"
 playServicesAuth = "21.3.0"
 playServicesAuthVersion = "21.3.0"
 playServicesDrive = "18.0.1"
@@ -75,6 +76,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
+material-v314 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuthVersion" }
 play-services-drive = { module = "com.google.android.gms:play-services-drive", version.ref = "playServicesDriveVersion" }
 androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workRuntimeKtx" }
