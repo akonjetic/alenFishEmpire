@@ -46,12 +46,21 @@ class OrderHistoryAdapter(
         val orderDetails = orders[position]
 
         val currentItemBinding = holder.binding
-        currentItemBinding.orderId.text = orderDetails.id.toString()
+        currentItemBinding.orderId.text = buildString {
+            append("Order #")
+            append(orderDetails.id.toString())
+        }
 
 
-        currentItemBinding.orderDate.text =  SimpleDateFormat("dd-MM-yyyy").format(orderDetails.date).toString()
-        currentItemBinding.fishQuantity.text = orderDetails.totalQuantity.toString()
-        currentItemBinding.totalPrice.text = orderDetails.totalPrice.toString()
+        currentItemBinding.orderDate.text =  SimpleDateFormat("dd/MM/yyyy").format(orderDetails.date).toString()
+        currentItemBinding.fishQuantity.text = buildString {
+            append("Quantity: ")
+            append(orderDetails.totalQuantity.toString())
+        }
+        currentItemBinding.totalPrice.text = buildString {
+            append("€")
+            append(orderDetails.totalPrice.toString())
+        }
 
         /*TODO dodaj da na klik ode na summary te narudzbe, omoguci da ima export u pdf*/
 

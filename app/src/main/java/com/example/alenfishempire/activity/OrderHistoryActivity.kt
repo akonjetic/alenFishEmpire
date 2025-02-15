@@ -1,10 +1,12 @@
 package com.example.alenfishempire.activity
 
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -26,6 +28,9 @@ import com.example.alenfishempire.adapter.OrderHistoryAdapter
 import com.example.alenfishempire.database.entities.OrderWithDetails
 import com.example.alenfishempire.databinding.ActivityNewCalculationBinding
 import com.example.alenfishempire.databinding.ActivityOrderHistoryBinding
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 /*TODO da je defaultno postavljen trenutni mjesec i godina u filter*/
 
@@ -34,6 +39,7 @@ class OrderHistoryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityOrderHistoryBinding
     private val viewModel: OrderHistoryViewModel by viewModels()
     private val orderHistoryAdapter by lazy { OrderHistoryAdapter(this, arrayListOf()) }
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +50,15 @@ class OrderHistoryActivity : AppCompatActivity() {
         binding.ordersRecyclerView.layoutManager = LinearLayoutManager(this)
         val view = binding.root
 
+        val adapter = ArrayAdapter.createFromResource(
+            this,
+            R.array.sort_options,
+            R.layout.spinner_dropdown_item
+        )
+
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
+        binding.sortSpinner.adapter = adapter
+
         applyFilters()
         setContentView(view)
 
@@ -52,62 +67,71 @@ class OrderHistoryActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // Filtriranje po mjesecu
-        binding.monthFilter.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                val selectedMonth = parent.getItemAtPosition(position).toString()
-                viewModel.filterByMonth(getMonthNumber(selectedMonth)) // Convert to numeric month
+        setDefaultDateRange()
+
+        // Dodavanje Date Pickera za početni datum
+        binding.startDate.setOnClickListener {
+            showDatePicker { selectedDate ->
+                binding.startDate.text = selectedDate
                 fetchFilteredAndSortedOrders()
             }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-        // Filtriranje po godini
-        binding.yearFilter.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                val selectedYear = parent.getItemAtPosition(position).toString()
-                viewModel.filterByYear(selectedYear)
+        // Dodavanje Date Pickera za krajnji datum
+        binding.endDate.setOnClickListener {
+            showDatePicker { selectedDate ->
+                binding.endDate.text = selectedDate
                 fetchFilteredAndSortedOrders()
             }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {}
         }
+        viewModel.getAllOrders(this)
 
         // Sortiranje po opciji
-        binding.sortSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        binding.sortSpinner.setOnItemSelectedListener(object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                val selectedSortOption = parent.getItemAtPosition(position).toString()
-                val sortQueryKey = getSortQueryKey(selectedSortOption) // Mapiranje na SQL ključeve
-                viewModel.sortBy(sortQueryKey)
                 fetchFilteredAndSortedOrders()
             }
-
             override fun onNothingSelected(parent: AdapterView<*>) {}
-        }
+        })
+
+        fetchFilteredAndSortedOrders()
+        viewModel.getAllOrders(this)
     }
 
-    private fun getMonthNumber(monthName: String): String {
-        // Mjeseci prema imenu, možeš dodati više ako treba
-        val months = mapOf(
-            "Siječanj" to "01",
-            "Veljača" to "02",
-            "Ožujak" to "03",
-            "Travanj" to "04",
-            "Svibanj" to "05",
-            "Lipanj" to "06",
-            "Srpanj" to "07",
-            "Kolovoz" to "08",
-            "Rujan" to "09",
-            "Listopad" to "10",
-            "Studeni" to "11",
-            "Prosinac" to "12"
-        )
-        return months[monthName] ?: ""
+    private fun setDefaultDateRange() {
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.DAY_OF_MONTH, 1) // Prvi dan mjeseca
+        val startDate = dateFormat.format(calendar.time)
+
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) // Zadnji dan mjeseca
+        val endDate = dateFormat.format(calendar.time)
+
+        binding.startDate.text = startDate
+        binding.endDate.text = endDate
+    }
+
+    private fun showDatePicker(onDateSelected: (String) -> Unit) {
+        val calendar = Calendar.getInstance()
+        DatePickerDialog(
+            this,
+            { _, year, month, dayOfMonth ->
+                val selectedDate = dateFormat.format(Calendar.getInstance().apply {
+                    set(year, month, dayOfMonth)
+                }.time)
+                onDateSelected(selectedDate)
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        ).show()
     }
 
     private fun fetchFilteredAndSortedOrders() {
-        viewModel.fetchFilteredAndSortedOrders(this) { data ->
+        val startDate = binding.startDate.text.toString()
+        val endDate = binding.endDate.text.toString()
+        val sortBy = getSortQueryKey(binding.sortSpinner.selectedItem.toString())
+
+        viewModel.filterOrdersByDateRange(this, startDate, endDate, sortBy) { data ->
             orderHistoryAdapter.updateData(data)
         }
     }
@@ -118,11 +142,22 @@ class OrderHistoryActivity : AppCompatActivity() {
 
     fun getSortQueryKey(selectedSortOption: String): String {
         return when (selectedSortOption) {
-            "Datum (silazno)" -> "date_desc"
-            "Datum (uzlazno)" -> "date_asc"
-            "Količina ribe (silazno)" -> "quantity"
-            "Cijena (silazno)" -> "price"
+            "Date (descending)" -> "date_desc"
+            "Date (ascending)" -> "date_asc"
+            "Quantity (descending)" -> "quantity"
+            "Total Price (descending)" -> "price"
             else -> "date_desc"
         }
     }
 }
+
+/*
+* <resources>
+    <string-array name="sort_options">
+        <item>Date (descending)</item>
+        <item>Date (ascending)</item>
+        <item>Quantity (descending)</item>
+        <item>Total Price (descending)</item>
+    </string-array>
+</resources>
+*/

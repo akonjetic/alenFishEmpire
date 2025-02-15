@@ -15,7 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Database(entities = [Fish::class, Order::class, FishOrder::class], version = 2, exportSchema = false)
+@Database(entities = [Fish::class, Order::class, FishOrder::class], version = 3, exportSchema = false)
 @TypeConverters(DateConverter::class, FishOrderIdConverter::class)
 abstract class FishDatabase : RoomDatabase() {
 
@@ -43,7 +43,7 @@ abstract class FishDatabase : RoomDatabase() {
         }
 
         private val roomDatabaseCallback = object : RoomDatabase.Callback() {
-            override fun onCreate(db: SupportSQLiteDatabase) {
+            override fun onOpen(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
                 // Pokreni seeding podataka u pozadini
                 CoroutineScope(Dispatchers.IO).launch {

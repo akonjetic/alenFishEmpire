@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.alenfishempire.database.FishDatabase
 import com.example.alenfishempire.database.entities.Fish
 import com.example.alenfishempire.database.entities.FishOrder
+import com.example.alenfishempire.database.entities.Order
 import com.example.alenfishempire.database.entities.OrderWithDetails
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -31,35 +32,21 @@ class OrderHistoryViewModel : ViewModel() {
         sortByFilter.value = sortOption
     }
 
-    // Funkcija za dohvatanje filtriranih i sortiranih narudžbi
-    fun fetchFilteredAndSortedOrders(
-        context: Context,
-        callback: (ArrayList<OrderWithDetails>) -> Unit
-    ) {
+    fun filterOrdersByDateRange(context: Context, startDate: String?, endDate: String?, sortBy: String, callback: (ArrayList<OrderWithDetails>) -> Unit) {
         viewModelScope.launch {
-        val fishDao = FishDatabase.getDatabase(context)?.getFishDao()
-
-            val dates = fishDao?.getOrdersByMonthAndYear("01", "2025")
-            Log.d("OrderHistory", "Fetched dates: $dates")
-        // Apply filters
-        val selectedMonth = monthFilter.value
-        val selectedYear = yearFilter.value
-        val selectedSortBy = sortByFilter.value
-
-        // Fetch orders using selected filters and sorting
-        val allOrders = fishDao?.getFilteredAndSortedOrders(
-            month = selectedMonth,
-            year = selectedYear,
-            sortBy = selectedSortBy ?: "date_desc" // Default sorting if none provided
-        ) ?: emptyList()
-
-        // Log the fetched orders for debugging purposes
-        Log.d("OrderHistory", "Fetched orders: $allOrders")
-
-        // Send the fetched orders
-        callback(ArrayList(allOrders))
+            val filteredOrders = FishDatabase.getDatabase(context)?.getFishDao()?.getFilteredAndSortedOrders(startDate, endDate, sortBy)
+            callback(ArrayList(filteredOrders))
+        }
     }
+
+    fun getAllOrders(context: Context) {
+        viewModelScope.launch {
+            val orders = FishDatabase.getDatabase(context)?.getFishDao()?.getAllOrders()
+            Log.d("OrderHistory", "Orders found: ${orders?.size}")
+        }
     }
+
+
 
 
 

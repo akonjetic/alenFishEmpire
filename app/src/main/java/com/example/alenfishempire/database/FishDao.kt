@@ -6,6 +6,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.TypeConverter
 import androidx.room.Update
 import com.example.alenfishempire.database.entities.Fish
 import com.example.alenfishempire.database.entities.FishDTO
@@ -13,7 +14,9 @@ import com.example.alenfishempire.database.entities.FishOrder
 import com.example.alenfishempire.database.entities.FishSalesStats
 import com.example.alenfishempire.database.entities.Order
 import com.example.alenfishempire.database.entities.OrderWithDetails
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 @Dao
 interface FishDao {
@@ -31,7 +34,6 @@ interface FishDao {
     suspend fun getAllOrdersDesc() : List<Order>
 
 
-    //TODO popravit discount u Orderu
     @Query("""
     SELECT o.orderId as id, o.orderDate as date, o.fishOrderIdList as fishOrderId, o.fishOrderIsFree as discount,         
         SUM(
@@ -44,20 +46,21 @@ interface FishDao {
     FROM 'Order' o
     JOIN FishOrder fo ON ',' || o.fishOrderIdList || ',' LIKE '%,' || fo.fishOrderId || ',%'
     JOIN Fish f ON fo.fishInOrderId = f.fishId
-    WHERE (:month IS NULL OR :month = '' OR strftime('%m', o.orderDate / 1000, 'unixepoch') = :month)
-    AND (:year IS NULL OR :year = '' OR strftime('%Y', o.orderDate / 1000, 'unixepoch') = :year)
+     WHERE (:startDate IS NULL OR :endDate IS NULL OR 
+           date(o.orderDate) BETWEEN date(:startDate) AND date(:endDate))  
     GROUP BY o.orderId
-    ORDER BY 
+    order by
         CASE WHEN :sortBy = 'date_desc' THEN o.orderDate END DESC,
         CASE WHEN :sortBy = 'date_asc' THEN o.orderDate END ASC,
         CASE WHEN :sortBy = 'price' THEN totalPrice END DESC,
         CASE WHEN :sortBy = 'quantity' THEN totalQuantity END DESC
 """)
     suspend fun getFilteredAndSortedOrders(
-        month: String?,
-        year: String?,
+        startDate: String?,
+        endDate: String?,
         sortBy: String
     ): List<OrderWithDetails>
+
 
     @Query("SELECT * FROM 'Order' ORDER BY orderDate DESC")
     suspend fun getAllOrders(): List<Order>
@@ -128,3 +131,4 @@ data class OrderDate(
     val month: String,
     val year: String
 )
+

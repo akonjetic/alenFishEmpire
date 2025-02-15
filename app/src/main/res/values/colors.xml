@@ -10,5 +10,6 @@
     <color name="dark_gray">#37474F</color>
     <color name="light_gray">#E0E0E0</color>
     <color name="dark_gray_background">#1E1E1E</color>
+    <color name="medium_gray_background">#303030</color>
     <color name="golden_titles">#FFC107</color>
 </resources>
