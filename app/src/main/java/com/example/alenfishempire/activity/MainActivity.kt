@@ -1,20 +1,9 @@
 package com.example.alenfishempire.activity
 
-import android.accounts.AccountManager
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
 import com.example.alenfishempire.databinding.ActivityMainBinding
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
-import com.google.api.services.drive.DriveScopes
-import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 

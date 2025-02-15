@@ -2,14 +2,19 @@ package com.example.alenfishempire.activity
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.res.Resources
 import android.media.MediaScannerConnection
 import android.os.Bundle
 import android.os.Environment
+import android.print.PrintAttributes.Margins
 import android.text.Editable
+import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.Log
+import android.view.Gravity
 import android.view.View
 import android.view.View.generateViewId
+import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.CheckBox
@@ -22,6 +27,8 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.ui.graphics.Color
+import androidx.core.view.marginTop
 import com.example.alenfishempire.R
 import com.example.alenfishempire.activity.viewmodel.NewCalculationViewModel
 import com.example.alenfishempire.database.entities.Fish
@@ -89,6 +96,8 @@ class NewCalculationActivity : AppCompatActivity() {
 
     private fun setupInitialRow() {
         setRowElementIds(binding.editableRow, 0)
+        binding.editableRow.setBackgroundResource(R.drawable.grid_border)
+
         val initialRowQuantity = binding.tableLayout.findViewWithTag<EditText>("fishQuantity_0")
         initialRowQuantity.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(
@@ -123,11 +132,19 @@ class NewCalculationActivity : AppCompatActivity() {
     private fun addNewRow() {
         val originalRow = binding.editableRow
 
-        val newRow = TableRow(this)
+        val newRow = TableRow(this).apply {
+            layoutParams = originalRow.layoutParams
+            setBackgroundResource(R.drawable.grid_border) // Osigurava isti izgled
+            setPadding(originalRow.paddingLeft, originalRow.paddingTop, originalRow.paddingRight, originalRow.paddingBottom)
+            minimumHeight = originalRow.height // Osigurava istu visinu reda
+        }
+
         for (i in 0 until originalRow.childCount) {
             val newView = when (val view = originalRow.getChildAt(i)) {
                 is Spinner -> Spinner(this).apply {
                     adapter = view.adapter
+                    layoutParams = view.layoutParams
+                    setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, view.paddingBottom)
                     setupSpinner(this, binding.tableLayout.childCount - 1)
                 }
 
@@ -136,25 +153,16 @@ class NewCalculationActivity : AppCompatActivity() {
                     inputType = view.inputType
                     isFocusable = view.isFocusable
                     isEnabled = view.isEnabled
+                    gravity = view.gravity
+                    textSize = (view as EditText).textSize / resources.displayMetrics.scaledDensity
+                    hint = view.hint
+                    setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, view.paddingBottom)
                     addTextChangedListener(object : TextWatcher {
-                        override fun beforeTextChanged(
-                            s: CharSequence?,
-                            start: Int,
-                            count: Int,
-                            after: Int
-                        ) {
-                        }
-
-                        override fun onTextChanged(
-                            s: CharSequence?,
-                            start: Int,
-                            before: Int,
-                            count: Int
-                        ) {
+                        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                             calculateTotalPrice(binding.tableLayout.indexOfChild(newRow))
                             calculateGrandTotal()
                         }
-
                         override fun afterTextChanged(s: Editable?) {}
                     })
                 }
@@ -162,46 +170,52 @@ class NewCalculationActivity : AppCompatActivity() {
                 is CheckBox -> CheckBox(this).apply {
                     isChecked = false
                     layoutParams = view.layoutParams
+                    setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, view.paddingBottom)
                     setOnCheckedChangeListener { _, _ ->
-                        calculateTotalPrice(
-                            binding.tableLayout.indexOfChild(
-                                newRow
-                            )
-                        )
+                        calculateTotalPrice(binding.tableLayout.indexOfChild(newRow))
                         calculateGrandTotal()
                     }
                 }
 
                 is ImageView -> ImageView(this).apply {
-                    layoutParams = view.layoutParams
-                    setImageResource(R.drawable.ic_delete_row)
+                    layoutParams = TableRow.LayoutParams(32.dpToPx(), 32.dpToPx()).apply {
+                        gravity = Gravity.CENTER
+                    }.also {
+                        (it as ViewGroup.MarginLayoutParams).setMargins(0, 8, 0, 0) // Dodaj marginTop
+                    }
+                    setImageResource(R.drawable.ic_remove_fish)
+                    visibility = View.VISIBLE
+                    scaleType = ImageView.ScaleType.CENTER_CROP // Sprječava smanjenje ikone
+                    setPadding(0, 0, 0, 0)
+                    adjustViewBounds = true
                     setOnClickListener {
                         binding.tableLayout.removeView(newRow)
                         reindexRows()
                         calculateGrandTotal()
                     }
-                    setPadding(
-                        view.paddingLeft,
-                        view.paddingTop,
-                        view.paddingRight,
-                        view.paddingBottom
-                    )
                 }
 
+
+
                 else -> TextView(this).apply {
-                    text = "0"
+                    text = "0.00"
                     layoutParams = view.layoutParams
-                    gravity = view.foregroundGravity
+                    gravity = Gravity.CENTER
+                    textAlignment = view.textAlignment
+                    setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, view.paddingBottom)
                 }
             }
             newRow.addView(newView)
         }
 
         setRowElementIds(newRow, binding.tableLayout.childCount - 1)
-
-        val index = binding.tableLayout.childCount - 1
-        binding.tableLayout.addView(newRow, index)
+        binding.tableLayout.addView(newRow, binding.tableLayout.childCount - 1)
     }
+
+
+
+
+
 
     private fun setupReadOnlyTable (order: Order){
 
@@ -258,21 +272,20 @@ class NewCalculationActivity : AppCompatActivity() {
                     textViewCounter++
                     "price_${textViewCounter}_"
                 }
-
                 else -> "unknown"
             }
             view.tag = "$type$rowIndex"
-            Log.d("NewCalculationActivity", view.tag.toString())
         }
     }
 
+
     @SuppressLint("SetTextI18n")
     private fun calculateTotalPrice(rowIndex: Int) {
-        val quantityEditText =
-            binding.tableLayout.findViewWithTag<EditText>("fishQuantity_$rowIndex")
+        val quantityEditText = binding.tableLayout.findViewWithTag<EditText>("fishQuantity_$rowIndex")
         val priceTextView = binding.tableLayout.findViewWithTag<TextView>("price_1_$rowIndex")
         val totalTextView = binding.tableLayout.findViewWithTag<TextView>("price_2_$rowIndex")
         val checkBox = binding.tableLayout.findViewWithTag<CheckBox>("fishIsFree_$rowIndex")
+
         if (quantityEditText != null && priceTextView != null && totalTextView != null && checkBox != null) {
             if (checkBox.isChecked) {
                 totalTextView.text = "0.0"
@@ -287,24 +300,37 @@ class NewCalculationActivity : AppCompatActivity() {
         }
     }
 
+
     @SuppressLint("SetTextI18n")
     private fun calculateGrandTotal() {
-        var grandTotal = 0.0
         var grandTotalQuantity = 0
+        var grandTotalPrice = 0.0
+
         for (i in 0 until binding.tableLayout.childCount) {
-            val totalTextView = binding.tableLayout.findViewWithTag<TextView>("price_2_$i")
-            val totalQuantiyView = binding.tableLayout.findViewWithTag<EditText>("fishQuantity_$i")
+            val quantityView = binding.tableLayout.findViewWithTag<EditText>("fishQuantity_$i")
+            val priceView = binding.tableLayout.findViewWithTag<TextView>("price_1_$i")
+            val isFreeCheckBox = binding.tableLayout.findViewWithTag<CheckBox>("fishIsFree_$i")
 
-            val totalText = totalTextView?.text?.toString()
-            val totalQuantity = totalQuantiyView?.text?.toString()
+            val quantityText = quantityView?.text?.toString()
+            val priceText = priceView?.text?.toString()
 
-            grandTotal += if (!totalText.isNullOrEmpty()) totalText.toDoubleOrNull() ?: 0.0 else 0.0
-            grandTotalQuantity += if (!totalQuantity.isNullOrEmpty()) totalQuantity.toIntOrNull()
-                ?: 0 else 0
+            val quantity = if (!quantityText.isNullOrEmpty()) quantityText.toIntOrNull() ?: 0 else 0
+            val price = if (!priceText.isNullOrEmpty()) priceText.toDoubleOrNull() ?: 0.0 else 0.0
+
+            if (isFreeCheckBox?.isChecked == true) {
+                grandTotalPrice += 0.0 // Ako je besplatno, ne dodaje se u ukupnu cijenu
+            } else {
+                grandTotalPrice += quantity * price
+            }
+
+            grandTotalQuantity += quantity
         }
-        binding.totalAmount.text = grandTotal.toString()
+
+        binding.totalAmount.text = String.format("%.2f", grandTotalPrice)
         binding.totalQuantity.text = grandTotalQuantity.toString()
     }
+
+
 
     private fun reindexRows() {
         for (i in 0 until binding.tableLayout.childCount) {
@@ -459,4 +485,9 @@ class NewCalculationActivity : AppCompatActivity() {
             Toast.makeText(this, "Exported to $fileName", Toast.LENGTH_SHORT).show()
         }
     }
+
+    fun Int.dpToPx(): Int {
+        return (this * Resources.getSystem().displayMetrics.density).toInt()
+    }
+
 }
