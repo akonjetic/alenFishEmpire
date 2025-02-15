@@ -91,7 +91,7 @@ dependencies {
     implementation (libs.itext7.core)
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.material)
-
+    implementation("com.google.android.material:material:1.12.0")
 
 
 

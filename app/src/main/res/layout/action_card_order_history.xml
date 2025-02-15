@@ -1,0 +1,45 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
+        android:id="@+id/orderHistoryLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/gradient_background"
+        android:padding="24dp"
+        android:layout_margin="12dp"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/card_icon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_order_history"
+                android:layout_marginEnd="12dp" />
+
+            <TextView
+                android:id="@+id/card_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Order History"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="@color/dark_gray" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/card_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Displays filtered and sorted previous orders."
+            android:textStyle="bold"
+            android:textColor="@color/dark_gray"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp" />
+    </LinearLayout>
+</merge>
