@@ -100,15 +100,16 @@ interface FishDao {
     suspend fun deleteFish(fish: Fish)
 
     @Query("""
-        SELECT Fish.fishName AS fishName, SUM(FishOrder.fishOrderQuantity) AS totalQuantity, 
-        SUM(FishOrder.fishOrderQuantity * Fish.fishPrice) AS totalSales, 
-        COUNT(FishOrder.fishOrderIsFree) AS totalFree 
-        FROM FishOrder 
-        JOIN Fish ON FishOrder.fishInOrderId = Fish.fishId
-        WHERE FishOrder.fishOrderIsFree = 1 
-        GROUP BY Fish.fishId
-    """)
+    SELECT Fish.fishName AS fishName, 
+           SUM(FishOrder.fishOrderQuantity) AS totalQuantity, 
+           SUM(CASE WHEN FishOrder.fishOrderIsFree = 0 THEN FishOrder.fishOrderQuantity * Fish.fishPrice ELSE 0 END) AS totalSales, 
+           SUM(CASE WHEN FishOrder.fishOrderIsFree = 1 THEN FishOrder.fishOrderQuantity ELSE 0 END) AS totalFree 
+    FROM FishOrder 
+    JOIN Fish ON FishOrder.fishInOrderId = Fish.fishId
+    GROUP BY Fish.fishId
+""")
     suspend fun getTotalFishSalesByType(): List<FishSalesStats>
+
 
     @Query("SELECT SUM(fishOrderQuantity * fishPrice) FROM FishOrder JOIN Fish ON FishOrder.fishInOrderId = Fish.fishId")
     suspend fun getTotalSales(): Float

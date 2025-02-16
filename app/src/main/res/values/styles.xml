@@ -8,6 +8,10 @@
         <item name="android:windowMinWidthMinor">90%</item>
     </style>
 
+    <style name="CustomDialogTheme" parent="Theme.MaterialComponents.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
 
 
 

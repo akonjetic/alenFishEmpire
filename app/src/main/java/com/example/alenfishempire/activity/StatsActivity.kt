@@ -1,5 +1,7 @@
 package com.example.alenfishempire.activity
 
+import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -17,6 +19,7 @@ class StatsActivity : AppCompatActivity() {
     private val fishStatListAdapter by lazy { FishStatsAdapter(this, arrayListOf()) }
 
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -31,15 +34,20 @@ class StatsActivity : AppCompatActivity() {
         viewModel.fetchTotalSales(this)
 
         viewModel.totalSales.observe(this) {
-            binding.tvTotalSales.text = it.toString()
+            binding.tvTotalSales.text = "Total Sales: €$it"
         }
 
         viewModel.totalFreeFish.observe(this) {
-            binding.tvTotalFreeFish.text = it.toString()
+            binding.tvTotalFreeFish.text = "Total Free Fish: $it"
         }
 
         viewModel.listOfAllFishSalesStats.observe(this) {
                 fishStatListAdapter.updateData(it as ArrayList<FishSalesStats>)
+        }
+
+        binding.homeIcon.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
         }
 
         setContentView(view)

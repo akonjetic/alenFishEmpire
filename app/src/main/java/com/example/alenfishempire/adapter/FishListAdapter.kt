@@ -51,12 +51,13 @@ class FishListAdapter(
         return fish.size
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: FishListViewHolder, position: Int) {
         val currentItem = fish[position]
 
         val currentItemBinding = holder.binding
         currentItemBinding.tvFishName.text = currentItem.name
-        currentItemBinding.tvFishPrice.text = currentItem.price.toString()
+        currentItemBinding.tvFishPrice.text = "€${currentItem.price}"
 
         val iconResId = fishIcons[position % fishIcons.size]
         currentItemBinding.ivFishIcon.setImageResource(iconResId)

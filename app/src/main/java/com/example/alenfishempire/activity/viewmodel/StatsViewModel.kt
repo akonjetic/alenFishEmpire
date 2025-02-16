@@ -13,7 +13,7 @@ class StatsViewModel : ViewModel() {
 
     val listOfAllFishSalesStats = MutableLiveData<List<FishSalesStats>>()
     val totalSales = MutableLiveData<Float>()
-    val totalFreeFish = MutableLiveData<Float>()
+    val totalFreeFish = MutableLiveData<Int>()
 
     fun fetchAllFishSalesStats(context: Context) {
         viewModelScope.launch {
@@ -30,7 +30,7 @@ class StatsViewModel : ViewModel() {
 
     fun fetchTotalFreeFish(context: Context) {
         viewModelScope.launch {
-            totalFreeFish.value = FishDatabase.getDatabase(context)?.getFishDao()?.getTotalFreeFish()?.toFloat()
+            totalFreeFish.value = FishDatabase.getDatabase(context)?.getFishDao()?.getTotalFreeFish()
         }
     }
 

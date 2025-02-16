@@ -25,6 +25,14 @@ class FishStatsAdapter(
         val binding = StatListItemBinding.bind(view)
     }
 
+    private val fishIcons = listOf(
+        R.drawable.ic_aqua_icon1,
+        R.drawable.ic_aqua_icon2,
+        R.drawable.ic_aqua_icon3,
+        R.drawable.ic_aqua_icon4,
+        R.drawable.ic_aqua_icon5
+    )
+
     @SuppressLint("NotifyDataSetChanged")
     fun updateData(newStats: ArrayList<FishSalesStats>) {
         stats.clear()
@@ -39,14 +47,17 @@ class FishStatsAdapter(
     }
 
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: FishSalesStatsViewHolder, position: Int) {
         val currentItem = stats[position]
 
         val currentItemBinding = holder.binding
-        currentItemBinding.statTotalSales.text = currentItem.totalSales.toString()
-        currentItemBinding.statTotalQuantity.text = currentItem.totalQuantity.toString()
+        currentItemBinding.statTotalSales.text = "Total: €${currentItem.totalSales}"
+        currentItemBinding.statTotalQuantity.text = "Qty: ${currentItem.totalQuantity}"
         currentItemBinding.statFishName.text = currentItem.fishName
 
+        val iconResId = fishIcons[position % fishIcons.size]
+        currentItemBinding.statFishIcon.setImageResource(iconResId)
 
   }
 

@@ -1,38 +1,62 @@
-<!-- Ovaj XML zamjenjuje vaš trenutni MaterialCardView layout -->
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardElevation="4dp"
-    app:cardCornerRadius="8dp">
+    app:cardElevation="8dp"
+    app:cardCornerRadius="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:background="@drawable/gradient_card_blue_background"
+        android:gravity="center_vertical">
+
+        <!-- Ikona ribe -->
+        <ImageView
+            android:id="@+id/statFishIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_fish"
+            android:layout_marginEnd="12dp"
+            app:tint="@color/dark_gray" />
 
         <TextView
+            android:id="@+id/statFishName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:text="Fish Name"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/dark_gray"
+            android:gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/statTotalQuantity"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:id="@+id/statFishName"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
+            android:text="Qty: 0"
+            android:textSize="16sp"
+            android:textColor="@color/golden_titles"
+            android:textStyle="bold"
+            android:gravity="center_vertical" />
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:id="@+id/statTotalQuantity"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
-
-        <TextView
+            android:id="@+id/statTotalSales"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:id="@+id/statTotalSales"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+            android:layout_weight="2"
+            android:text="€0.00"
+            android:textSize="16sp"
+            android:textColor="@color/golden_titles"
+            android:textStyle="bold"
+            android:gravity="center_vertical"/>
+
     </LinearLayout>
+
 </androidx.cardview.widget.CardView>

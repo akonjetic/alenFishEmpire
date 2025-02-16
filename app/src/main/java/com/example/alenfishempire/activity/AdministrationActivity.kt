@@ -52,4 +52,10 @@ class AdministrationActivity : AppCompatActivity(){
             .addToBackStack(null)
             .commit()
     }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.fetchAllFish(this)
+    }
+
 }

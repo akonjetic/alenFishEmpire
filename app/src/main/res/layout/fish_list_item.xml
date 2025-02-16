@@ -5,50 +5,51 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="6dp"
-    app:cardBackgroundColor="@color/white">
+    app:cardCornerRadius="16dp"
+    app:cardElevation="10dp"
+    app:cardBackgroundColor="@android:color/transparent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:orientation="horizontal"
+        android:background="@drawable/gradient_card_background">
 
-        <!-- Icon next to fish name -->
+        <!-- Fish Icon -->
         <ImageView
             android:id="@+id/ivFishIcon"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:src="@drawable/ic_aqua_icon1"
             android:contentDescription="Fish icon"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintVertical_bias="0.5"
-            android:layout_marginEnd="8dp" />
+            android:layout_marginEnd="12dp"
+            app:tint="@color/golden_titles" />
 
-        <TextView
-            android:id="@+id/tvFishName"
+        <!-- Fish Details -->
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Fish Name"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            android:layout_marginStart="12dp"
-            app:layout_constraintStart_toEndOf="@+id/ivFishIcon"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/tvFishPrice"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tvFishPrice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="€0.00"
-            android:textColor="@color/black"
-            android:textStyle="italic"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBaseline_toBaselineOf="@+id/tvFishName" />
+            <TextView
+                android:id="@+id/tvFishName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fish Name"
+                android:textSize="18sp"
+                android:textColor="@color/white"
+                android:textStyle="bold"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/tvFishPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="€0.00"
+                android:textSize="14sp"
+                android:textColor="@color/golden_titles"
+                android:textStyle="italic"/>
+        </LinearLayout>
+    </LinearLayout>
 </androidx.cardview.widget.CardView>
