@@ -24,3 +24,10 @@ data class FishSalesStats(
     val totalSales: Float,
     val totalFree: Int
 )
+
+data class FishOrderItem(
+    var fishType: String = "",
+    var quantity: Int = 0,
+    var price: Float = 0.0f,
+    var isFree: Boolean = false
+)

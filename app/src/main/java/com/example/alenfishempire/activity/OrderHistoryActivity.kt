@@ -57,6 +57,7 @@ class OrderHistoryActivity : AppCompatActivity() {
         )
 
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
+
         binding.sortSpinner.adapter = adapter
 
         applyFilters()
@@ -150,14 +151,3 @@ class OrderHistoryActivity : AppCompatActivity() {
         }
     }
 }
-
-/*
-* <resources>
-    <string-array name="sort_options">
-        <item>Date (descending)</item>
-        <item>Date (ascending)</item>
-        <item>Quantity (descending)</item>
-        <item>Total Price (descending)</item>
-    </string-array>
-</resources>
-*/

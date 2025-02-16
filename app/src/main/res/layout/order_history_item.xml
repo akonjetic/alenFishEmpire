@@ -75,7 +75,7 @@
                 android:layout_weight="1"
                 android:text="Količina: 20 kom"
                 android:textColor="@color/light_gray"
-                android:textSize="16sp" />
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/totalPrice"

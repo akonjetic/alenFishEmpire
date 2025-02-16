@@ -118,10 +118,25 @@ interface FishDao {
     suspend fun getTotalFreeFish(): Int
 
     suspend fun insertInitialData() {
-        insertFish(Fish(1, "crvena neonka", 1.0f))
-        insertFish(Fish(2, "bakrena tetra", 1.0f))
-        insertFish(Fish(3, "ember tetra", 1.5f))
-        insertFish(Fish(4, "plamena tetra", 1.0f))
+        insertFish(Fish(1, "Crvena Neonka", 1.0f))
+        insertFish(Fish(2, "Bakrena Tetra", 1.0f))
+        insertFish(Fish(3, "Ember Tetra", 1.0f))
+        insertFish(Fish(4, "Plamena Tetra", 1.0f))
+
+        insertFish(Fish(5, "Palmeri Tetra", 1.35f))
+        insertFish(Fish(6, "Rhodostomus", 1.35f))
+        insertFish(Fish(7, "Crvena Fantom Tetra", 1.35f))
+        insertFish(Fish(8, "Crna Fantom Tetra", 1.35f))
+        insertFish(Fish(9, "Ornatus White Fin", 1.35f))
+
+        insertFish(Fish(10, "Color Tetra", 1.5f))
+
+        insertFish(Fish(11, "Congo Tetra", 2.0f))
+        insertFish(Fish(12, "Congo Albino", 2.0f))
+        insertFish(Fish(13, "Olovčice", 2.0f))
+
+        insertFish(Fish(14, "Galaxy Razbora", 2.65f))
+
 
     }
 

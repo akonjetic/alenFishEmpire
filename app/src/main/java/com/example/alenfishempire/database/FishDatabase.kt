@@ -15,7 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Database(entities = [Fish::class, Order::class, FishOrder::class], version = 3, exportSchema = false)
+@Database(entities = [Fish::class, Order::class, FishOrder::class], version = 4, exportSchema = false)
 @TypeConverters(DateConverter::class, FishOrderIdConverter::class)
 abstract class FishDatabase : RoomDatabase() {
 

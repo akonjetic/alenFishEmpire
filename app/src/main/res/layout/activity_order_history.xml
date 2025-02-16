@@ -115,10 +115,11 @@
             <Spinner
                 android:id="@+id/sortSpinner"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:textColor="@android:color/white"
                 android:textSize="16sp"
-                android:background="@drawable/gradient_card_blue_background"
+                android:background="@drawable/spinner_background"
+                android:popupBackground="@drawable/spinner_background"
                 android:paddingHorizontal="8dp"
                 android:elevation="4dp"
                 android:clipToOutline="true"
