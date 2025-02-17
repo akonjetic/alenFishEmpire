@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.alenfishempire.database.FishDatabase
-import com.example.alenfishempire.database.entities.Fish
 import com.example.alenfishempire.database.entities.FishSalesStats
 import kotlinx.coroutines.launch
 
@@ -17,7 +16,8 @@ class StatsViewModel : ViewModel() {
 
     fun fetchAllFishSalesStats(context: Context) {
         viewModelScope.launch {
-            listOfAllFishSalesStats.value = FishDatabase.getDatabase(context)?.getFishDao()?.getTotalFishSalesByType()
+            listOfAllFishSalesStats.value =
+                FishDatabase.getDatabase(context)?.getFishDao()?.getTotalFishSalesByType()
 
         }
     }
@@ -30,7 +30,8 @@ class StatsViewModel : ViewModel() {
 
     fun fetchTotalFreeFish(context: Context) {
         viewModelScope.launch {
-            totalFreeFish.value = FishDatabase.getDatabase(context)?.getFishDao()?.getTotalFreeFish()
+            totalFreeFish.value =
+                FishDatabase.getDatabase(context)?.getFishDao()?.getTotalFreeFish()
         }
     }
 

@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
 
 
-        binding.newCalculationCard.setOnClickListener{
+        binding.newCalculationCard.setOnClickListener {
             val intent = Intent(this, NewCalculationActivity::class.java)
             startActivity(intent)
         }

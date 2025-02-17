@@ -5,15 +5,9 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.alenfishempire.R
-import com.example.alenfishempire.activity.fragment.EditFishFragment
-import com.example.alenfishempire.adapter.FishListAdapter.FishListViewHolder
-import com.example.alenfishempire.database.entities.Fish
 import com.example.alenfishempire.database.entities.FishSalesStats
-import com.example.alenfishempire.databinding.FishListItemBinding
 import com.example.alenfishempire.databinding.StatListItemBinding
 
 class FishStatsAdapter(
@@ -52,14 +46,14 @@ class FishStatsAdapter(
         val currentItem = stats[position]
 
         val currentItemBinding = holder.binding
-        currentItemBinding.statTotalSales.text = "Total: €${currentItem.totalSales}"
+        currentItemBinding.statTotalSales.text = "Total: €${String.format("%.2f", currentItem.totalSales)}"
         currentItemBinding.statTotalQuantity.text = "Qty: ${currentItem.totalQuantity}"
         currentItemBinding.statFishName.text = currentItem.fishName
 
         val iconResId = fishIcons[position % fishIcons.size]
         currentItemBinding.statFishIcon.setImageResource(iconResId)
 
-  }
+    }
 
     override fun getItemCount(): Int = stats.size
 

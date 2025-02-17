@@ -20,7 +20,7 @@ class FishListAdapter(
     private val context: Context,
     private val fish: ArrayList<Fish>,
     private val onFishClick: (Fish) -> Unit
-    ): RecyclerView.Adapter<FishListAdapter.FishListViewHolder>() {
+) : RecyclerView.Adapter<FishListAdapter.FishListViewHolder>() {
 
     private val fishIcons = listOf(
         R.drawable.ic_aqua_icon1,

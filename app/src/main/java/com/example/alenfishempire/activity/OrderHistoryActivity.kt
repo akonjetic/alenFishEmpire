@@ -3,36 +3,19 @@ package com.example.alenfishempire.activity
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.alenfishempire.R
-import com.example.alenfishempire.activity.ui.theme.AlenFishEmpireTheme
-import com.example.alenfishempire.activity.viewmodel.NewCalculationViewModel
 import com.example.alenfishempire.activity.viewmodel.OrderHistoryViewModel
 import com.example.alenfishempire.adapter.OrderHistoryAdapter
-import com.example.alenfishempire.database.entities.OrderWithDetails
-import com.example.alenfishempire.databinding.ActivityNewCalculationBinding
 import com.example.alenfishempire.databinding.ActivityOrderHistoryBinding
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-
-/*TODO da je defaultno postavljen trenutni mjesec i godina u filter*/
 
 class OrderHistoryActivity : AppCompatActivity() {
 
@@ -70,7 +53,6 @@ class OrderHistoryActivity : AppCompatActivity() {
 
         setDefaultDateRange()
 
-        // Dodavanje Date Pickera za početni datum
         binding.startDate.setOnClickListener {
             showDatePicker { selectedDate ->
                 binding.startDate.text = selectedDate
@@ -78,7 +60,6 @@ class OrderHistoryActivity : AppCompatActivity() {
             }
         }
 
-        // Dodavanje Date Pickera za krajnji datum
         binding.endDate.setOnClickListener {
             showDatePicker { selectedDate ->
                 binding.endDate.text = selectedDate
@@ -87,11 +68,16 @@ class OrderHistoryActivity : AppCompatActivity() {
         }
         viewModel.getAllOrders(this)
 
-        // Sortiranje po opciji
         binding.sortSpinner.setOnItemSelectedListener(object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+            override fun onItemSelected(
+                parent: AdapterView<*>,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
                 fetchFilteredAndSortedOrders()
             }
+
             override fun onNothingSelected(parent: AdapterView<*>) {}
         })
 
@@ -104,7 +90,10 @@ class OrderHistoryActivity : AppCompatActivity() {
         calendar.set(Calendar.DAY_OF_MONTH, 1) // Prvi dan mjeseca
         val startDate = dateFormat.format(calendar.time)
 
-        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) // Zadnji dan mjeseca
+        calendar.set(
+            Calendar.DAY_OF_MONTH,
+            calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+        ) // Zadnji dan mjeseca
         val endDate = dateFormat.format(calendar.time)
 
         binding.startDate.text = startDate

@@ -45,7 +45,6 @@ abstract class FishDatabase : RoomDatabase() {
         private val roomDatabaseCallback = object : RoomDatabase.Callback() {
             override fun onOpen(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
-                // Pokreni seeding podataka u pozadini
                 CoroutineScope(Dispatchers.IO).launch {
                     instance?.getFishDao()?.insertInitialData()
                 }

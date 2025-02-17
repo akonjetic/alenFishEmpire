@@ -7,7 +7,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.alenfishempire.activity.viewmodel.StatsViewModel
-import com.example.alenfishempire.adapter.FishListAdapter
 import com.example.alenfishempire.adapter.FishStatsAdapter
 import com.example.alenfishempire.database.entities.FishSalesStats
 import com.example.alenfishempire.databinding.ActivityStatsBinding
@@ -42,7 +41,7 @@ class StatsActivity : AppCompatActivity() {
         }
 
         viewModel.listOfAllFishSalesStats.observe(this) {
-                fishStatListAdapter.updateData(it as ArrayList<FishSalesStats>)
+            fishStatListAdapter.updateData(it as ArrayList<FishSalesStats>)
         }
 
         binding.homeIcon.setOnClickListener {

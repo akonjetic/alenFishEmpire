@@ -47,7 +47,12 @@ class NewCalculationActivity : AppCompatActivity() {
         binding = ActivityNewCalculationBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        adapter = FishOrderAdapter(orderList, emptyList(), fishPriceMap, { position -> removeOrderRow(position) }, { calculateGrandTotal() })
+        adapter = FishOrderAdapter(
+            orderList,
+            emptyList(),
+            fishPriceMap,
+            { position -> removeOrderRow(position) },
+            { calculateGrandTotal() })
         binding.rvFishOrders.layoutManager = LinearLayoutManager(this)
         binding.rvFishOrders.adapter = adapter
 
@@ -61,18 +66,29 @@ class NewCalculationActivity : AppCompatActivity() {
             val fishNames = fishList.map { it.name }
             fishPriceMap = fishList.associate { it.name to it.price }.toMutableMap()
 
-            adapter = FishOrderAdapter(orderList, fishNames, fishPriceMap, { position -> removeOrderRow(position) }, { calculateGrandTotal() })
+            adapter = FishOrderAdapter(
+                orderList,
+                fishNames,
+                fishPriceMap,
+                { position -> removeOrderRow(position) },
+                { calculateGrandTotal() })
             binding.rvFishOrders.adapter = adapter
         }
 
         binding.addRowButton.setOnClickListener { addNewRow() }
         binding.sumUpOrder.setOnClickListener { saveOrder() }
 
-        addNewRow() // Dodaj prvi red pri pokretanju
+        addNewRow()
     }
 
     private fun addNewRow() {
-        orderList.add(FishOrderItem(fishType = fishPriceMap.keys.firstOrNull() ?: "", quantity = 1, price = fishPriceMap.values.firstOrNull() ?: 0f))
+        orderList.add(
+            FishOrderItem(
+                fishType = fishPriceMap.keys.firstOrNull() ?: "",
+                quantity = 1,
+                price = fishPriceMap.values.firstOrNull() ?: 0f
+            )
+        )
         adapter.notifyItemInserted(orderList.size - 1)
     }
 
@@ -89,12 +105,11 @@ class NewCalculationActivity : AppCompatActivity() {
 
         for (item in orderList) {
             if (!item.isFree) {
-                grandTotalQuantity += item.quantity
                 grandTotalPrice += item.quantity * item.price
             }
+            grandTotalQuantity += item.quantity
         }
 
-        // **Ažuriraj prikaz ukupne količine i cijene**
         binding.totalQuantity.text = grandTotalQuantity.toString()
         binding.totalAmount.text = "€${String.format("%.2f", grandTotalPrice)}"
     }
@@ -118,7 +133,12 @@ class NewCalculationActivity : AppCompatActivity() {
 
                     if (fishOrderList.size == orderList.size) {
                         val fishOrderIds = fishOrderList.map { it.id }
-                        val order = Order(id = 0, date = currentDate, fishOrderId = fishOrderIds, discount = null)
+                        val order = Order(
+                            id = 0,
+                            date = currentDate,
+                            fishOrderId = fishOrderIds,
+                            discount = null
+                        )
                         viewModel.saveNewOrder(this, order) { orderId -> order.id = orderId }
                         showExportDialog(order)
                     }
@@ -148,7 +168,6 @@ class NewCalculationActivity : AppCompatActivity() {
 
         dialog.show()
     }
-
 
 
     @SuppressLint("SimpleDateFormat", "DefaultLocale")
@@ -217,7 +236,16 @@ class NewCalculationActivity : AppCompatActivity() {
             document.add(Paragraph())
             document.add(Paragraph())
             document.add(Paragraph("Total Quantity: $totalQuantity").setBold())
-            document.add(Paragraph("Total Price (€): ${String.format("%.2f", totalPrice)}").setBold())
+            document.add(
+                Paragraph(
+                    "Total Price (€): ${
+                        String.format(
+                            "%.2f",
+                            totalPrice
+                        )
+                    }"
+                ).setBold()
+            )
             document.close()
 
             MediaScannerConnection.scanFile(

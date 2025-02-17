@@ -2,7 +2,6 @@ package com.example.alenfishempire.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,11 +11,16 @@ import com.example.alenfishempire.adapter.FishListAdapter
 import com.example.alenfishempire.database.entities.Fish
 import com.example.alenfishempire.databinding.ActivityAdministrationBinding
 
-class AdministrationActivity : AppCompatActivity(){
+class AdministrationActivity : AppCompatActivity() {
 
-    private lateinit var binding : ActivityAdministrationBinding
+    private lateinit var binding: ActivityAdministrationBinding
     private val viewModel: AdministrationViewModel by viewModels()
-    private val fishListAdapter by lazy { FishListAdapter(this, arrayListOf()) { fish -> openEditFishFragment(fish) }}
+    private val fishListAdapter by lazy {
+        FishListAdapter(
+            this,
+            arrayListOf()
+        ) { fish -> openEditFishFragment(fish) }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +31,7 @@ class AdministrationActivity : AppCompatActivity(){
         val view = binding.root
 
         viewModel.fetchAllFish(this)
-        viewModel.listOfAllFish.observe(this){
+        viewModel.listOfAllFish.observe(this) {
             fishListAdapter.updateData(it)
         }
 
@@ -56,6 +60,10 @@ class AdministrationActivity : AppCompatActivity(){
     override fun onResume() {
         super.onResume()
         viewModel.fetchAllFish(this)
+
+        viewModel.listOfAllFish.observe(this) {
+            fishListAdapter.updateData(it)
+        }
     }
 
 }

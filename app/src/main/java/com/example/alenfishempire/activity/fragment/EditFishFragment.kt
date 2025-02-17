@@ -6,11 +6,9 @@ import android.os.Bundle
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import androidx.appcompat.app.AlertDialog
 import com.example.alenfishempire.R
 import com.example.alenfishempire.activity.viewmodel.AdministrationViewModel
 import com.example.alenfishempire.database.entities.Fish
-import com.example.alenfishempire.database.entities.FishDTO
 import com.example.alenfishempire.databinding.FragmentEditFishBinding
 
 class EditFishFragment : DialogFragment() {
@@ -81,8 +79,6 @@ class EditFishFragment : DialogFragment() {
             }
         }
 
-
-
         binding.btnDeleteFish.setOnClickListener {
             fish?.let { fishToDelete ->
                 viewModel.deleteFish(requireContext(), fishToDelete)
@@ -91,11 +87,13 @@ class EditFishFragment : DialogFragment() {
             dismiss()
         }
 
-
         val dialog = Dialog(requireContext(), R.style.CustomDialogTheme)
         dialog.setContentView(binding.root)
 
-        dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        dialog.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
         return dialog
@@ -103,6 +101,7 @@ class EditFishFragment : DialogFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null // Čišćenje bindinga
+        _binding = null
     }
+
 }

@@ -16,23 +16,26 @@ import java.io.Serializable
 class NewCalculationViewModel : ViewModel() {
 
     val listOfAllFish = MutableLiveData<ArrayList<Fish>>()
-    val fishOrder = MutableLiveData<FishOrder>()
 
     private val _fishOrderDetails = MutableLiveData<Map<String, Serializable>>()
     val fishOrderDetails: LiveData<Map<String, Serializable>> get() = _fishOrderDetails
 
-    fun fetchFishOrderDetails(context: Context, fishOrderIds: List<Long>, callback: (List<Map<String, Serializable>>) -> Unit) {
+    fun fetchFishOrderDetails(
+        context: Context,
+        fishOrderIds: List<Long>,
+        callback: (List<Map<String, Serializable>>) -> Unit
+    ) {
         viewModelScope.launch {
             val detailsList = mutableListOf<Map<String, Serializable>>()
 
-            // Dohvati podatke za svaki fishOrderId
             fishOrderIds.forEach { fishOrderId ->
                 val fishOrderDeferred = async {
                     FishDatabase.getDatabase(context)?.getFishDao()?.getFishOrderById(fishOrderId)
                 }
                 val fishDeferred = async {
                     val fishOrder = fishOrderDeferred.await()
-                    FishDatabase.getDatabase(context)?.getFishDao()?.getFishById(fishOrder?.fishId!!)
+                    FishDatabase.getDatabase(context)?.getFishDao()
+                        ?.getFishById(fishOrder?.fishId!!)
                 }
 
                 val fishOrder = fishOrderDeferred.await()
@@ -46,26 +49,21 @@ class NewCalculationViewModel : ViewModel() {
                 detailsList.add(detailsMap)
             }
 
-            // Kada su svi podaci dohvaćeni, šaljemo ih natrag
             callback(detailsList)
         }
     }
 
-    fun fetchAllFish(context: Context){
+    fun fetchAllFish(context: Context) {
         viewModelScope.launch {
-            listOfAllFish.value = FishDatabase.getDatabase(context)?.getFishDao()?.getAllFish() as ArrayList<Fish>
-        }
-    }
-
-    fun fetchFishOrderById(context: Context, fishOrderId: Long) {
-        viewModelScope.launch {
-            fishOrder.value = FishDatabase.getDatabase(context)?.getFishDao()?.getFishOrderById(fishOrderId)
+            listOfAllFish.value =
+                FishDatabase.getDatabase(context)?.getFishDao()?.getAllFish() as ArrayList<Fish>
         }
     }
 
     fun saveNewFishOrder(context: Context, fishOrder: FishOrder, callback: (Long) -> Unit) {
         viewModelScope.launch {
-            val orderId = FishDatabase.getDatabase(context)?.getFishDao()?.insertFishOrder(fishOrder)
+            val orderId =
+                FishDatabase.getDatabase(context)?.getFishDao()?.insertFishOrder(fishOrder)
             callback(orderId!!)
         }
     }
@@ -76,7 +74,5 @@ class NewCalculationViewModel : ViewModel() {
             callback(orderId!!)
         }
     }
-
-
 
 }
