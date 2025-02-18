@@ -23,18 +23,21 @@ class AdministrationViewModel : ViewModel() {
         viewModelScope.launch {
             val orderId = FishDatabase.getDatabase(context)?.getFishDao()?.insertFish(fish)
         }
+        fetchAllFish(context)
     }
 
     fun updateFish(context: Context, fish: Fish) {
         viewModelScope.launch {
             FishDatabase.getDatabase(context)?.getFishDao()?.updateFish(fish)
         }
+        fetchAllFish(context)
     }
 
     fun deleteFish(context: Context, fish: Fish) {
         viewModelScope.launch {
             FishDatabase.getDatabase(context)?.getFishDao()?.deleteFish(fish)
         }
+        fetchAllFish(context)
     }
 
 }

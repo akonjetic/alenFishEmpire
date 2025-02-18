@@ -30,10 +30,11 @@ class AdministrationActivity : AppCompatActivity() {
         binding.recyclerViewFish.layoutManager = LinearLayoutManager(this)
         val view = binding.root
 
-        viewModel.fetchAllFish(this)
         viewModel.listOfAllFish.observe(this) {
             fishListAdapter.updateData(it)
         }
+
+        viewModel.fetchAllFish(this)
 
         setContentView(view)
 
@@ -60,10 +61,6 @@ class AdministrationActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         viewModel.fetchAllFish(this)
-
-        viewModel.listOfAllFish.observe(this) {
-            fishListAdapter.updateData(it)
-        }
     }
 
 }
