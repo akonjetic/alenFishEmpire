@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardElevation="6dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/dark_gray"
+        android:padding="16dp">
+
+        <!-- Order ID -->
+        <TextView
+            android:id="@+id/orderId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Order #123"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/golden_titles"
+            android:paddingBottom="8dp"/>
+
+        <!-- Order Date -->
+        <TextView
+            android:id="@+id/orderDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date: 01/01/2024"
+            android:textSize="16sp"
+            android:textColor="@color/light_gray"
+            android:paddingBottom="8dp"/>
+
+        <!-- Total Quantity -->
+        <TextView
+            android:id="@+id/totalQuantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total Quantity: 5"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/golden_titles"
+            android:paddingBottom="8dp"/>
+
+        <!-- Total Price -->
+        <TextView
+            android:id="@+id/totalPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total Price: €20.00"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/golden_titles"
+            android:paddingBottom="12dp"/>
+
+        <!-- Fish Details Title -->
+        <TextView
+            android:id="@+id/fishDetailsTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fish Details:"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:paddingBottom="4dp"/>
+
+        <!-- Scrollable Container for Fish Details -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@drawable/gradient_table_background"
+            android:padding="8dp">
+
+            <LinearLayout
+                android:id="@+id/fishDetailsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- Close Button -->
+        <Button
+            android:id="@+id/btnClose"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Close"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:backgroundTint="@color/golden_titles"
+            android:layout_marginTop="12dp"
+            android:padding="10dp"/>
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

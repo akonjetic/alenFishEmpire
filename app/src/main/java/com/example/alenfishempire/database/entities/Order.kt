@@ -28,8 +28,24 @@ data class Order (
 data class OrderWithDetails(
     val id: Long,
     val date: Date,
-    val fishOrderId: List<Long>,
+    val fishOrderList: List<FishOrderDetail>,
     val discount: Float?,
     val totalPrice: Float,
     val totalQuantity: Int
+): Serializable
+
+data class OrderWithDetailsRaw(
+    val id: Long,
+    val date: Date,
+    val discount: Float?,
+    val totalPrice: Float,
+    val totalQuantity: Int,
+    val fishDetails: String?
 )
+
+
+data class FishOrderDetail(
+    val fishName: String,
+    val quantity: Int,
+    val price: Float
+): Serializable

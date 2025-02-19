@@ -5,8 +5,10 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.alenfishempire.R
+import com.example.alenfishempire.activity.fragment.OrderSummaryDialogFragment
 import com.example.alenfishempire.database.entities.OrderWithDetails
 import com.example.alenfishempire.databinding.OrderHistoryItemBinding
 import java.text.SimpleDateFormat
@@ -55,6 +57,14 @@ class OrderHistoryAdapter(
         }
         currentItemBinding.totalPrice.text = "€${String.format("%.2f", orderDetails.totalPrice)}"
 
+
+        holder.itemView.setOnClickListener {
+            val activity = context as? FragmentActivity
+            activity?.let {
+                val dialog = OrderSummaryDialogFragment.newInstance(orderDetails)
+                dialog.show(activity.supportFragmentManager, "OrderSummaryDialog")
+            }
+        }
 
     }
 }

@@ -160,10 +160,12 @@ class NewCalculationActivity : AppCompatActivity() {
         btnSavePdf.setOnClickListener {
             exportToPDF(order)
             dialog.dismiss()
+            finish()
         }
 
         btnNoThanks.setOnClickListener {
             dialog.dismiss()
+            finish()
         }
 
         dialog.show()

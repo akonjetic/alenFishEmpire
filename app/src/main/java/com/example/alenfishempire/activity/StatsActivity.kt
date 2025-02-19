@@ -33,7 +33,8 @@ class StatsActivity : AppCompatActivity() {
         viewModel.fetchTotalSales(this)
 
         viewModel.totalSales.observe(this) {
-            binding.tvTotalSales.text = "Total Sales: €$it"
+            binding.tvTotalSales.text = "Total Sales: €${String.format("%.2f", it)}"
+            
         }
 
         viewModel.totalFreeFish.observe(this) {

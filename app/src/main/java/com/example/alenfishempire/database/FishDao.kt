@@ -12,6 +12,7 @@ import com.example.alenfishempire.database.entities.FishOrder
 import com.example.alenfishempire.database.entities.FishSalesStats
 import com.example.alenfishempire.database.entities.Order
 import com.example.alenfishempire.database.entities.OrderWithDetails
+import com.example.alenfishempire.database.entities.OrderWithDetailsRaw
 
 @Dao
 interface FishDao {
@@ -30,33 +31,80 @@ interface FishDao {
 
     @Query(
         """
-    SELECT o.orderId as id, o.orderDate as date, o.fishOrderIdList as fishOrderId, o.fishOrderIsFree as discount,         
+    SELECT 
+        o.orderId AS id, 
+        o.orderDate AS date, 
+        o.fishOrderIsFree AS discount, 
         SUM(
             CASE 
                 WHEN fo.fishOrderIsFree = 1 THEN 0
                 ELSE (fo.fishOrderQuantity * f.fishPrice)
             END
         ) AS totalPrice,
-        SUM(fo.fishOrderQuantity) AS totalQuantity
+        SUM(fo.fishOrderQuantity) AS totalQuantity,
+        GROUP_CONCAT(f.fishName || ':' || fo.fishOrderQuantity || ':' || f.fishPrice, ';') AS fishDetails
+        
     FROM 'Order' o
     JOIN FishOrder fo ON ',' || o.fishOrderIdList || ',' LIKE '%,' || fo.fishOrderId || ',%'
     JOIN Fish f ON fo.fishInOrderId = f.fishId
-     WHERE (:startDate IS NULL OR :endDate IS NULL OR 
+    
+    WHERE (:startDate IS NULL OR :endDate IS NULL OR 
            date(o.orderDate) BETWEEN date(:startDate) AND date(:endDate))  
+    
     GROUP BY o.orderId
-    order by
+    
+    ORDER BY
         CASE WHEN :sortBy = 'date_desc' THEN o.orderDate END DESC,
         CASE WHEN :sortBy = 'date_asc' THEN o.orderDate END ASC,
         CASE WHEN :sortBy = 'price' THEN totalPrice END DESC,
         CASE WHEN :sortBy = 'quantity' THEN totalQuantity END DESC
-"""
+    """
     )
     suspend fun getFilteredAndSortedOrders(
         startDate: String?,
         endDate: String?,
         sortBy: String
-    ): List<OrderWithDetails>
+    ): List<OrderWithDetailsRaw> // Privremena klasa
 
+
+    /*
+    * @Query(
+    """
+    SELECT
+        o.orderId AS id,
+        o.orderDate AS date,
+        o.fishOrderIsFree AS discount,
+        SUM(
+            CASE
+                WHEN fo.fishOrderIsFree = 1 THEN 0
+                ELSE (fo.fishOrderQuantity * f.fishPrice)
+            END
+        ) AS totalPrice,
+        SUM(fo.fishOrderQuantity) AS totalQuantity,
+        GROUP_CONCAT(f.fishName || ':' || fo.fishOrderQuantity || ':' || f.fishPrice, ';') AS fishDetails  -- Novi podatak
+
+    FROM 'Order' o
+    JOIN FishOrder fo ON ',' || o.fishOrderIdList || ',' LIKE '%,' || fo.fishOrderId || ',%'
+    JOIN Fish f ON fo.fishInOrderId = f.fishId
+
+    WHERE (:startDate IS NULL OR :endDate IS NULL OR
+           date(o.orderDate) BETWEEN date(:startDate) AND date(:endDate))
+
+    GROUP BY o.orderId
+
+    ORDER BY
+        CASE WHEN :sortBy = 'date_desc' THEN o.orderDate END DESC,
+        CASE WHEN :sortBy = 'date_asc' THEN o.orderDate END ASC,
+        CASE WHEN :sortBy = 'price' THEN totalPrice END DESC,
+        CASE WHEN :sortBy = 'quantity' THEN totalQuantity END DESC
+    """
+)
+suspend fun getFilteredAndSortedOrders(
+    startDate: String?,
+    endDate: String?,
+    sortBy: String
+): List<OrderWithDetailsRaw> // Privremena klasa
+*/
 
     @Query("SELECT * FROM 'Order' ORDER BY orderDate DESC")
     suspend fun getAllOrders(): List<Order>
