@@ -1,5 +1,5 @@
 [versions]
-agp = "8.7.3"
+agp = "8.8.1"
 compiler = "8.1.0"
 databindingCompiler = "8.7.3"
 firebaseBom = "32.2.2"

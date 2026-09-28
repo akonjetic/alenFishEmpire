@@ -86,7 +86,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    kapt(libs.androidx.databinding.compiler)
     ksp(libs.androidx.room.compiler)
     implementation (libs.itext7.core)
     implementation(libs.androidx.fragment.ktx)

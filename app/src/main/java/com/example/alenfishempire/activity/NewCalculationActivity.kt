@@ -3,7 +3,6 @@ package com.example.alenfishempire.activity
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.Resources
-import android.media.MediaScannerConnection
 import android.os.Bundle
 import android.os.Environment
 import android.widget.Button
@@ -26,10 +25,10 @@ import com.itextpdf.layout.Document
 import com.itextpdf.layout.element.Paragraph
 import com.itextpdf.layout.element.Table
 import com.itextpdf.layout.properties.TextAlignment
-import java.io.File
-import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
+import android.content.ContentValues
+import android.provider.MediaStore
 
 const val EXTRA_IS_READ_ONLY = "READ_ONLY"
 const val EXTRA_ORDER = "ORDER"
@@ -89,7 +88,9 @@ class NewCalculationActivity : AppCompatActivity() {
                 price = fishPriceMap.values.firstOrNull() ?: 0f
             )
         )
+
         adapter.notifyItemInserted(orderList.size - 1)
+        calculateGrandTotal()
     }
 
     private fun removeOrderRow(position: Int) {
@@ -175,11 +176,27 @@ class NewCalculationActivity : AppCompatActivity() {
     @SuppressLint("SimpleDateFormat", "DefaultLocale")
     private fun exportToPDF(order: Order) {
         val fileName = "Order_${order.id}.pdf"
-        val downloadDir =
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-        val file = File(downloadDir, fileName)
 
-        val pdfWriter = PdfWriter(FileOutputStream(file))
+        val contentValues = ContentValues().apply {
+            put(MediaStore.Downloads.DISPLAY_NAME, fileName)
+            put(MediaStore.Downloads.MIME_TYPE, "application/pdf")
+            put(
+                MediaStore.Downloads.RELATIVE_PATH,
+                Environment.DIRECTORY_DOWNLOADS
+            )
+        }
+
+        val resolver = contentResolver
+
+        val uri = resolver.insert(
+            MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+            contentValues
+        ) ?: throw Exception("Could not create PDF file")
+
+        val outputStream = resolver.openOutputStream(uri)
+            ?: throw Exception("Could not open PDF output stream")
+
+        val pdfWriter = PdfWriter(outputStream)
         val pdfDoc = PdfDocument(pdfWriter)
         val document = Document(pdfDoc)
 
@@ -206,13 +223,29 @@ class NewCalculationActivity : AppCompatActivity() {
                 val fishOrder = details["fishOrder"] as FishOrder
                 val fish = details["fish"] as Fish
 
-                table.addCell(fish.name).setTextAlignment(TextAlignment.CENTER)
-                table.addCell(fishOrder.quantity.toString()).setTextAlignment(TextAlignment.CENTER)
-                table.addCell(fish.price.toString()).setTextAlignment(TextAlignment.CENTER)
-                table.addCell(if (fishOrder.isFree) "Yes" else "No")
+                table.addCell(fish.name)
                     .setTextAlignment(TextAlignment.CENTER)
-                table.addCell(if (fishOrder.isFree) "/" else (fish.price * fishOrder.quantity.toFloat()).toString())
+
+                table.addCell(fishOrder.quantity.toString())
                     .setTextAlignment(TextAlignment.CENTER)
+
+                table.addCell(String.format("%.2f", fish.price))
+                    .setTextAlignment(TextAlignment.CENTER)
+
+                table.addCell(
+                    if (fishOrder.isFree) "Yes" else "No"
+                ).setTextAlignment(TextAlignment.CENTER)
+
+                table.addCell(
+                    if (fishOrder.isFree) {
+                        "/"
+                    } else {
+                        String.format(
+                            "%.2f",
+                            fish.price * fishOrder.quantity
+                        )
+                    }
+                ).setTextAlignment(TextAlignment.CENTER)
             }
 
             val totalQuantity = order.fishOrderId.sumOf { fishOrderId ->
@@ -248,16 +281,14 @@ class NewCalculationActivity : AppCompatActivity() {
                     }"
                 ).setBold()
             )
+
             document.close()
 
-            MediaScannerConnection.scanFile(
+            Toast.makeText(
                 this,
-                arrayOf(file.absolutePath),
-                null,
-                null
-            )
-
-            Toast.makeText(this, "Exported to $fileName", Toast.LENGTH_SHORT).show()
+                "Exported to $fileName",
+                Toast.LENGTH_SHORT
+            ).show()
         }
 
 
