@@ -1,5 +1,6 @@
 package com.example.alenfishempire.activity.fragment
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -60,16 +61,57 @@ class OrderSummaryDialogFragment : DialogFragment() {
         dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
+    @SuppressLint("DefaultLocale")
     private fun displayFishDetails(order: OrderWithDetails) {
+
         binding.fishDetailsContainer.removeAllViews()
 
         order.fishOrderList.forEach { fish ->
-            val textView = TextView(requireContext()).apply {
-                text = "${fish.fishName}: ${fish.quantity} pcs - €${String.format("%.2f", fish.price)}"
-                textSize = 14f
-                setPadding(8, 4, 8, 4)
+
+            val flags = buildString {
+
+                if (fish.isFree) {
+                    append("FREE")
+                }
+
+                if (fish.excludeFromQuantity) {
+
+                    if (isNotEmpty()) {
+                        append(" | ")
+                    }
+
+                    append("NO QTY")
+                }
             }
-            binding.fishDetailsContainer.addView(textView)
+
+            val textView =
+                TextView(requireContext()).apply {
+
+                    text = buildString {
+
+                        append(fish.fishName)
+                        append(": ")
+                        append(fish.quantity)
+                        append(" pcs - €")
+                        append(
+                            String.format(
+                                "%.2f",
+                                fish.price
+                            )
+                        )
+
+                        if (flags.isNotEmpty()) {
+                            append(" ($flags)")
+                        }
+                    }
+
+                    textSize = 14f
+                    setPadding(8, 4, 8, 4)
+                }
+
+            binding.fishDetailsContainer.addView(
+                textView
+            )
         }
     }
 

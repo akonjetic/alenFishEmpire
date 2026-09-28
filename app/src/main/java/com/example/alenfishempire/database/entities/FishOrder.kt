@@ -15,7 +15,9 @@ data class FishOrder (
     @ColumnInfo(name = "fishOrderQuantity")
     val quantity: Int,
     @ColumnInfo(name = "fishOrderIsFree")
-    val isFree: Boolean
+    val isFree: Boolean,
+    @ColumnInfo(name = "fishOrderExcludeFromQuantity")
+    val excludeFromQuantity: Boolean
 ) : Serializable
 
 data class FishSalesStats(
@@ -29,5 +31,6 @@ data class FishOrderItem(
     var fishType: String = "",
     var quantity: Int = 0,
     var price: Float = 0.0f,
-    var isFree: Boolean = false
+    var isFree: Boolean = false,
+    var excludeFromQuantity: Boolean = false
 )

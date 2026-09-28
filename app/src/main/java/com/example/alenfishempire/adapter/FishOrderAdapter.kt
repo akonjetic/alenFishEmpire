@@ -28,12 +28,14 @@ class FishOrderAdapter(
         var quantityWatcher: TextWatcher? = null
         var spinnerListener: AdapterView.OnItemSelectedListener? = null
         var freeListener: android.widget.CompoundButton.OnCheckedChangeListener? = null
+        var excludeQuantityListener: android.widget.CompoundButton.OnCheckedChangeListener? = null
     }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): FishOrderViewHolder {
+
         val binding = RowFishOrderBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
@@ -48,6 +50,7 @@ class FishOrderAdapter(
         holder: FishOrderViewHolder,
         position: Int
     ) {
+
         val orderItem = orderList[position]
         val context = holder.itemView.context
 
@@ -64,6 +67,7 @@ class FishOrderAdapter(
         }
 
         holder.binding.cbFree.setOnCheckedChangeListener(null)
+        holder.binding.cbExcludeFromQuantity.setOnCheckedChangeListener(null)
 
         // ---------------------------------------------------------
         // Fish spinner
@@ -104,6 +108,7 @@ class FishOrderAdapter(
                     pos: Int,
                     id: Long
                 ) {
+
                     if (pos !in fishNames.indices) return
 
                     val selectedFish = fishNames[pos]
@@ -143,6 +148,7 @@ class FishOrderAdapter(
                 override fun afterTextChanged(
                     s: Editable?
                 ) {
+
                     val qty =
                         s?.toString()?.toIntOrNull() ?: 0
 
@@ -178,7 +184,8 @@ class FishOrderAdapter(
         // Free checkbox
         // ---------------------------------------------------------
 
-        holder.binding.cbFree.isChecked = orderItem.isFree
+        holder.binding.cbFree.isChecked =
+            orderItem.isFree
 
         val freeListener =
             android.widget.CompoundButton.OnCheckedChangeListener {
@@ -196,6 +203,29 @@ class FishOrderAdapter(
         )
 
         // ---------------------------------------------------------
+        // Exclude from Quantity checkbox
+        // ---------------------------------------------------------
+
+        holder.binding.cbExcludeFromQuantity.isChecked =
+            orderItem.excludeFromQuantity
+
+        val excludeQuantityListener =
+            android.widget.CompoundButton.OnCheckedChangeListener {
+                    _, isChecked ->
+
+                orderItem.excludeFromQuantity = isChecked
+
+                updateTotalCallback()
+            }
+
+        holder.excludeQuantityListener =
+            excludeQuantityListener
+
+        holder.binding.cbExcludeFromQuantity.setOnCheckedChangeListener(
+            excludeQuantityListener
+        )
+
+        // ---------------------------------------------------------
         // Delete
         // ---------------------------------------------------------
 
@@ -207,7 +237,9 @@ class FishOrderAdapter(
             }
 
         holder.binding.btnDeleteRow.setOnClickListener {
-            val currentPosition = orderList.indexOf(orderItem)
+
+            val currentPosition =
+                orderList.indexOf(orderItem)
 
             if (currentPosition != -1) {
                 onDelete(currentPosition)

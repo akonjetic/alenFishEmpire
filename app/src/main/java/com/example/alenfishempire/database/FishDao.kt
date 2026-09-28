@@ -41,8 +41,20 @@ interface FishDao {
                 ELSE (fo.fishOrderQuantity * f.fishPrice)
             END
         ) AS totalPrice,
-        SUM(fo.fishOrderQuantity) AS totalQuantity,
-        GROUP_CONCAT(f.fishName || ':' || fo.fishOrderQuantity || ':' || f.fishPrice, ';') AS fishDetails
+        SUM(
+            CASE
+                WHEN fo.fishOrderExcludeFromQuantity = 1 THEN 0
+                ELSE fo.fishOrderQuantity
+            END
+        ) AS totalQuantity,
+  GROUP_CONCAT(
+    f.fishName || ':' ||
+    fo.fishOrderQuantity || ':' ||
+    f.fishPrice || ':' ||
+    fo.fishOrderIsFree || ':' ||
+    fo.fishOrderExcludeFromQuantity,
+    ';'
+) AS fishDetails
         
     FROM 'Order' o
     JOIN FishOrder fo ON ',' || o.fishOrderIdList || ',' LIKE '%,' || fo.fishOrderId || ',%'

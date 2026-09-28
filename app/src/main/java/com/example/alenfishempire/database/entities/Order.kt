@@ -47,5 +47,7 @@ data class OrderWithDetailsRaw(
 data class FishOrderDetail(
     val fishName: String,
     val quantity: Int,
-    val price: Float
+    val price: Float,
+    val isFree: Boolean,
+    val excludeFromQuantity: Boolean
 ): Serializable

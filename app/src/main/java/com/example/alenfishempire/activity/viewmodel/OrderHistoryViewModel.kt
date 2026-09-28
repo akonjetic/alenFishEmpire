@@ -1,3 +1,4 @@
+
 package com.example.alenfishempire.activity.viewmodel
 
 import android.content.Context
@@ -20,9 +21,20 @@ class OrderHistoryViewModel : ViewModel() {
         callback: (ArrayList<OrderWithDetails>) -> Unit
     ) {
         viewModelScope.launch {
-            val rawOrders = FishDatabase.getDatabase(context)?.getFishDao()
-                ?.getFilteredAndSortedOrders(startDate, endDate, sortBy)
-            val processedOrders = rawOrders?.let { convertRawToOrderWithDetails(it) } ?: emptyList()
+
+            val rawOrders = FishDatabase.getDatabase(context)
+                ?.getFishDao()
+                ?.getFilteredAndSortedOrders(
+                    startDate,
+                    endDate,
+                    sortBy
+                )
+
+            val processedOrders =
+                rawOrders?.let {
+                    convertRawToOrderWithDetails(it)
+                } ?: emptyList()
+
             callback(ArrayList(processedOrders))
         }
     }
@@ -30,24 +42,51 @@ class OrderHistoryViewModel : ViewModel() {
 
     fun getAllOrders(context: Context) {
         viewModelScope.launch {
-            val orders = FishDatabase.getDatabase(context)?.getFishDao()?.getAllOrders()
-            Log.d("OrderHistory", "Orders found: ${orders?.size}")
+
+            val orders =
+                FishDatabase.getDatabase(context)
+                    ?.getFishDao()
+                    ?.getAllOrders()
+
+            Log.d(
+                "OrderHistory",
+                "Orders found: ${orders?.size}"
+            )
         }
     }
 
 
-    fun convertRawToOrderWithDetails(rawOrders: List<OrderWithDetailsRaw>): List<OrderWithDetails> {
+    fun convertRawToOrderWithDetails(
+        rawOrders: List<OrderWithDetailsRaw>
+    ): List<OrderWithDetails> {
+
         return rawOrders.map { raw ->
-            val fishList = raw.fishDetails?.split(";")?.mapNotNull { fishDetail ->
-                val parts = fishDetail.split(":")
-                if (parts.size == 3) {
-                    FishOrderDetail(
-                        fishName = parts[0],
-                        quantity = parts[1].toIntOrNull() ?: 0,
-                        price = parts[2].toFloatOrNull() ?: 0f
-                    )
-                } else null
-            } ?: emptyList()
+
+            val fishList =
+                raw.fishDetails
+                    ?.split(";")
+                    ?.mapNotNull { fishDetail ->
+
+                        val parts = fishDetail.split(":")
+
+                        // name : quantity : price : isFree : excludeFromQuantity
+                        if (parts.size >= 5) {
+
+                            FishOrderDetail(
+                                fishName = parts[0],
+                                quantity = parts[1].toIntOrNull() ?: 0,
+                                price = parts[2].toFloatOrNull() ?: 0f,
+                                isFree = parts[3] == "1",
+                                excludeFromQuantity =
+                                parts[4] == "1"
+                            )
+
+                        } else {
+                            null
+                        }
+                    }
+                    ?: emptyList()
+
 
             OrderWithDetails(
                 id = raw.id,
@@ -59,5 +98,4 @@ class OrderHistoryViewModel : ViewModel() {
             )
         }
     }
-
 }

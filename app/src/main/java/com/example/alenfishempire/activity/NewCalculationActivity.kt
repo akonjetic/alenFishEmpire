@@ -1,10 +1,12 @@
 package com.example.alenfishempire.activity
 
 import android.annotation.SuppressLint
+import android.content.ContentValues
 import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
 import android.os.Environment
+import android.provider.MediaStore
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -27,8 +29,6 @@ import com.itextpdf.layout.element.Table
 import com.itextpdf.layout.properties.TextAlignment
 import java.text.SimpleDateFormat
 import java.util.Date
-import android.content.ContentValues
-import android.provider.MediaStore
 
 const val EXTRA_IS_READ_ONLY = "READ_ONLY"
 const val EXTRA_ORDER = "ORDER"
@@ -38,11 +38,14 @@ class NewCalculationActivity : AppCompatActivity() {
     private lateinit var binding: ActivityNewCalculationBinding
     private val viewModel: NewCalculationViewModel by viewModels()
     private lateinit var adapter: FishOrderAdapter
+
     private val orderList = mutableListOf<FishOrderItem>()
+
     private var fishPriceMap = mutableMapOf<String, Float>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         binding = ActivityNewCalculationBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -51,8 +54,12 @@ class NewCalculationActivity : AppCompatActivity() {
             emptyList(),
             fishPriceMap,
             { position -> removeOrderRow(position) },
-            { calculateGrandTotal() })
-        binding.rvFishOrders.layoutManager = LinearLayoutManager(this)
+            { calculateGrandTotal() }
+        )
+
+        binding.rvFishOrders.layoutManager =
+            LinearLayoutManager(this)
+
         binding.rvFishOrders.adapter = adapter
 
         binding.homeIcon.setOnClickListener {
@@ -61,216 +68,547 @@ class NewCalculationActivity : AppCompatActivity() {
         }
 
         viewModel.fetchAllFish(this)
+
         viewModel.listOfAllFish.observe(this) { fishList ->
-            val fishNames = fishList.map { it.name }
-            fishPriceMap = fishList.associate { it.name to it.price }.toMutableMap()
+
+            val fishNames =
+                fishList.map { it.name }
+
+            fishPriceMap =
+                fishList.associate {
+                    it.name to it.price
+                }.toMutableMap()
 
             adapter = FishOrderAdapter(
                 orderList,
                 fishNames,
                 fishPriceMap,
                 { position -> removeOrderRow(position) },
-                { calculateGrandTotal() })
+                { calculateGrandTotal() }
+            )
+
             binding.rvFishOrders.adapter = adapter
+
+            calculateGrandTotal()
         }
 
-        binding.addRowButton.setOnClickListener { addNewRow() }
-        binding.sumUpOrder.setOnClickListener { saveOrder() }
+        binding.addRowButton.setOnClickListener {
+            addNewRow()
+        }
+
+        binding.sumUpOrder.setOnClickListener {
+            saveOrder()
+        }
 
         addNewRow()
     }
 
+    // ---------------------------------------------------------
+    // Add row
+    // ---------------------------------------------------------
+
     private fun addNewRow() {
+
         orderList.add(
             FishOrderItem(
                 fishType = fishPriceMap.keys.firstOrNull() ?: "",
                 quantity = 1,
-                price = fishPriceMap.values.firstOrNull() ?: 0f
+                price = fishPriceMap.values.firstOrNull() ?: 0f,
+                isFree = false,
+                excludeFromQuantity = false
             )
         )
 
-        adapter.notifyItemInserted(orderList.size - 1)
+        adapter.notifyItemInserted(
+            orderList.size - 1
+        )
+
         calculateGrandTotal()
     }
 
+    // ---------------------------------------------------------
+    // Remove row
+    // ---------------------------------------------------------
+
     private fun removeOrderRow(position: Int) {
+
+        if (position !in orderList.indices) {
+            return
+        }
+
         orderList.removeAt(position)
+
         adapter.notifyItemRemoved(position)
+
         calculateGrandTotal()
     }
+
+    // ---------------------------------------------------------
+    // Calculate total
+    // ---------------------------------------------------------
 
     @SuppressLint("SetTextI18n", "DefaultLocale")
     private fun calculateGrandTotal() {
+
         var grandTotalQuantity = 0
         var grandTotalPrice = 0.0
 
         for (item in orderList) {
-            if (!item.isFree) {
-                grandTotalPrice += item.quantity * item.price
+
+            // ---------------------------------------------
+            // Quantity
+            // ---------------------------------------------
+            //
+            // Ako je "No Qty" označen,
+            // ova stavka NE ulazi u total quantity.
+            //
+            if (!item.excludeFromQuantity) {
+                grandTotalQuantity += item.quantity
             }
-            grandTotalQuantity += item.quantity
+
+            // ---------------------------------------------
+            // Price
+            // ---------------------------------------------
+            //
+            // Free = ne ulazi u cijenu.
+            //
+            // No Qty = i dalje ulazi u cijenu.
+            //
+            if (!item.isFree) {
+                grandTotalPrice +=
+                    item.quantity * item.price
+            }
         }
 
-        binding.totalQuantity.text = grandTotalQuantity.toString()
-        binding.totalAmount.text = "€${String.format("%.2f", grandTotalPrice)}"
+        binding.totalQuantity.text =
+            grandTotalQuantity.toString()
+
+        binding.totalAmount.text =
+            "€${String.format("%.2f", grandTotalPrice)}"
     }
 
+    // ---------------------------------------------------------
+    // Save order
+    // ---------------------------------------------------------
 
     private fun saveOrder() {
-        val fishOrderList = mutableListOf<FishOrder>()
+
+        val fishOrderList =
+            mutableListOf<FishOrder>()
+
         val currentDate = Date()
 
         for (item in orderList) {
-            val selectedFish = viewModel.listOfAllFish.value?.find { it.name == item.fishType }
-            if (selectedFish != null && item.quantity > 0) {
+
+            val selectedFish =
+                viewModel.listOfAllFish.value?.find {
+                    it.name == item.fishType
+                }
+
+            if (
+                selectedFish != null &&
+                item.quantity > 0
+            ) {
+
                 val fishOrder = FishOrder(
                     id = 0,
                     fishId = selectedFish.id,
                     quantity = item.quantity,
-                    isFree = item.isFree
+                    isFree = item.isFree,
+                    excludeFromQuantity =
+                    item.excludeFromQuantity
                 )
-                viewModel.saveNewFishOrder(this, fishOrder) { fishOrderId ->
-                    fishOrderList.add(fishOrder.copy(id = fishOrderId))
 
-                    if (fishOrderList.size == orderList.size) {
-                        val fishOrderIds = fishOrderList.map { it.id }
+                viewModel.saveNewFishOrder(
+                    this,
+                    fishOrder
+                ) { fishOrderId ->
+
+                    fishOrderList.add(
+                        fishOrder.copy(
+                            id = fishOrderId
+                        )
+                    )
+
+                    if (
+                        fishOrderList.size ==
+                        orderList.count { it.quantity > 0 }
+                    ) {
+
+                        val fishOrderIds =
+                            fishOrderList.map {
+                                it.id
+                            }
+
                         val order = Order(
                             id = 0,
                             date = currentDate,
                             fishOrderId = fishOrderIds,
                             discount = null
                         )
-                        viewModel.saveNewOrder(this, order) { orderId -> order.id = orderId }
-                        showExportDialog(order)
+
+                        viewModel.saveNewOrder(
+                            this,
+                            order
+                        ) { orderId ->
+
+                            order.id = orderId
+
+                            showExportDialog(order)
+                        }
                     }
                 }
             }
         }
     }
 
-    private fun showExportDialog(order: Order) {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_export, null)
-        val dialog = AlertDialog.Builder(this, R.style.CustomDialogTheme)
-            .setView(dialogView)
-            .setCancelable(false)
-            .create()
+    // ---------------------------------------------------------
+    // Export dialog
+    // ---------------------------------------------------------
 
-        val btnSavePdf = dialogView.findViewById<Button>(R.id.btnSavePdf)
-        val btnNoThanks = dialogView.findViewById<Button>(R.id.btnNoThanks)
+    private fun showExportDialog(order: Order) {
+
+        val dialogView =
+            layoutInflater.inflate(
+                R.layout.dialog_export,
+                null
+            )
+
+        val dialog =
+            AlertDialog.Builder(
+                this,
+                R.style.CustomDialogTheme
+            )
+                .setView(dialogView)
+                .setCancelable(false)
+                .create()
+
+        val btnSavePdf =
+            dialogView.findViewById<Button>(
+                R.id.btnSavePdf
+            )
+
+        val btnNoThanks =
+            dialogView.findViewById<Button>(
+                R.id.btnNoThanks
+            )
 
         btnSavePdf.setOnClickListener {
+
             exportToPDF(order)
+
             dialog.dismiss()
+
             finish()
         }
 
         btnNoThanks.setOnClickListener {
+
             dialog.dismiss()
+
             finish()
         }
 
         dialog.show()
     }
 
+    // ---------------------------------------------------------
+    // PDF
+    // ---------------------------------------------------------
 
     @SuppressLint("SimpleDateFormat", "DefaultLocale")
     private fun exportToPDF(order: Order) {
-        val fileName = "Order_${order.id}.pdf"
 
-        val contentValues = ContentValues().apply {
-            put(MediaStore.Downloads.DISPLAY_NAME, fileName)
-            put(MediaStore.Downloads.MIME_TYPE, "application/pdf")
-            put(
-                MediaStore.Downloads.RELATIVE_PATH,
-                Environment.DIRECTORY_DOWNLOADS
-            )
-        }
+        val fileName =
+            "Order_${order.id}.pdf"
+
+        val contentValues =
+            ContentValues().apply {
+
+                put(
+                    MediaStore.Downloads.DISPLAY_NAME,
+                    fileName
+                )
+
+                put(
+                    MediaStore.Downloads.MIME_TYPE,
+                    "application/pdf"
+                )
+
+                put(
+                    MediaStore.Downloads.RELATIVE_PATH,
+                    Environment.DIRECTORY_DOWNLOADS
+                )
+            }
 
         val resolver = contentResolver
 
-        val uri = resolver.insert(
-            MediaStore.Downloads.EXTERNAL_CONTENT_URI,
-            contentValues
-        ) ?: throw Exception("Could not create PDF file")
+        val uri =
+            resolver.insert(
+                MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                contentValues
+            )
+                ?: throw Exception(
+                    "Could not create PDF file"
+                )
 
-        val outputStream = resolver.openOutputStream(uri)
-            ?: throw Exception("Could not open PDF output stream")
+        val outputStream =
+            resolver.openOutputStream(uri)
+                ?: throw Exception(
+                    "Could not open PDF output stream"
+                )
 
-        val pdfWriter = PdfWriter(outputStream)
-        val pdfDoc = PdfDocument(pdfWriter)
-        val document = Document(pdfDoc)
+        val pdfWriter =
+            PdfWriter(outputStream)
 
-        val dateFormat = SimpleDateFormat("dd-MM-yyyy, HH:mm:ss") // Koristi "HH" za 24-satni format
+        val pdfDoc =
+            PdfDocument(pdfWriter)
 
-        val formattedDate = dateFormat.format(order.date)
+        val document =
+            Document(pdfDoc)
 
-        document.add(Paragraph("ORDER DETAILS").setBold())
-        document.add(Paragraph("Order ID: ${order.id}"))
-        document.add(Paragraph("Date: $formattedDate"))
+        val dateFormat =
+            SimpleDateFormat(
+                "dd-MM-yyyy, HH:mm:ss"
+            )
+
+        val formattedDate =
+            dateFormat.format(order.date)
+
+        document.add(
+            Paragraph("ORDER DETAILS")
+                .setBold()
+        )
+
+        document.add(
+            Paragraph("Order ID: ${order.id}")
+        )
+
+        document.add(
+            Paragraph("Date: $formattedDate")
+        )
 
         document.add(Paragraph())
         document.add(Paragraph())
 
-        val table = Table(floatArrayOf(100f, 100f, 100f, 100f, 100f))
-        table.addHeaderCell("Fish Type").setBold()
-        table.addHeaderCell("Quantity").setBold()
-        table.addHeaderCell("Item Price (€)").setBold()
-        table.addHeaderCell("Free").setBold()
-        table.addHeaderCell("Total (€)").setBold()
+        val table =
+            Table(
+                floatArrayOf(
+                    100f,
+                    100f,
+                    100f,
+                    100f,
+                    100f,
+                    100f
+                )
+            )
 
-        viewModel.fetchFishOrderDetails(this, order.fishOrderId) { detailsList ->
+        table.addHeaderCell("Fish Type")
+            .setBold()
+
+        table.addHeaderCell("Quantity")
+            .setBold()
+
+        table.addHeaderCell("Item Price (€)")
+            .setBold()
+
+        table.addHeaderCell("Free")
+            .setBold()
+
+        table.addHeaderCell("Exclude from Quantity")
+            .setBold()
+
+        table.addHeaderCell("Total (€)")
+            .setBold()
+
+        viewModel.fetchFishOrderDetails(
+            this,
+            order.fishOrderId
+        ) { detailsList ->
+
+            // -------------------------------------------------
+            // Table rows
+            // -------------------------------------------------
+
             detailsList.forEach { details ->
-                val fishOrder = details["fishOrder"] as FishOrder
-                val fish = details["fish"] as Fish
 
-                table.addCell(fish.name)
-                    .setTextAlignment(TextAlignment.CENTER)
+                val fishOrder =
+                    details["fishOrder"] as FishOrder
 
-                table.addCell(fishOrder.quantity.toString())
-                    .setTextAlignment(TextAlignment.CENTER)
-
-                table.addCell(String.format("%.2f", fish.price))
-                    .setTextAlignment(TextAlignment.CENTER)
+                val fish =
+                    details["fish"] as Fish
 
                 table.addCell(
-                    if (fishOrder.isFree) "Yes" else "No"
-                ).setTextAlignment(TextAlignment.CENTER)
+                    fish.name
+                ).setTextAlignment(
+                    TextAlignment.CENTER
+                )
+
+                table.addCell(
+                    fishOrder.quantity.toString()
+                ).setTextAlignment(
+                    TextAlignment.CENTER
+                )
+
+                table.addCell(
+                    String.format(
+                        "%.2f",
+                        fish.price
+                    )
+                ).setTextAlignment(
+                    TextAlignment.CENTER
+                )
 
                 table.addCell(
                     if (fishOrder.isFree) {
-                        "/"
+                        "Yes"
                     } else {
+                        "No"
+                    }
+                ).setTextAlignment(
+                    TextAlignment.CENTER
+                )
+
+                table.addCell(
+                    if (fishOrder.excludeFromQuantity) {
+                        "Yes"
+                    } else {
+                        "No"
+                    }
+                ).setTextAlignment(
+                    TextAlignment.CENTER
+                )
+
+                table.addCell(
+                    if (fishOrder.isFree) {
+
+                        "/"
+
+                    } else {
+
                         String.format(
                             "%.2f",
-                            fish.price * fishOrder.quantity
+                            fish.price *
+                                    fishOrder.quantity
                         )
                     }
-                ).setTextAlignment(TextAlignment.CENTER)
+                ).setTextAlignment(
+                    TextAlignment.CENTER
+                )
             }
 
-            val totalQuantity = order.fishOrderId.sumOf { fishOrderId ->
-                val details =
-                    detailsList.find { it["fishOrder"]?.let { fishOrder -> (fishOrder as FishOrder).id == fishOrderId } == true }
-                val fishOrder = details?.get("fishOrder") as? FishOrder
-                fishOrder?.quantity ?: 0
-            }
+            // -------------------------------------------------
+            // Total Quantity
+            // -------------------------------------------------
 
-            val totalPrice = order.fishOrderId.sumOf { fishOrderId ->
+            val totalQuantity =
+                order.fishOrderId.sumOf { fishOrderId ->
+
+                    val details =
+                        detailsList.find {
+                            it["fishOrder"]
+                                ?.let { fishOrder ->
+                                    (fishOrder as FishOrder).id ==
+                                            fishOrderId
+                                } == true
+                        }
+
+                    val fishOrder =
+                        details?.get(
+                            "fishOrder"
+                        ) as? FishOrder
+
+                    if (
+                        fishOrder?.excludeFromQuantity == true
+                    ) {
+                        0
+                    } else {
+                        fishOrder?.quantity ?: 0
+                    }
+                }
+
+            // -------------------------------------------------
+            // Total Price
+            // -------------------------------------------------
+
+            val totalPrice =
+                order.fishOrderId.sumOf { fishOrderId ->
+
+                    val details =
+                        detailsList.find {
+                            it["fishOrder"]
+                                ?.let { fishOrder ->
+                                    (fishOrder as FishOrder).id ==
+                                            fishOrderId
+                                } == true
+                        }
+
+                    val fishOrder =
+                        details?.get(
+                            "fishOrder"
+                        ) as? FishOrder
+
+                    val fish =
+                        details?.get(
+                            "fish"
+                        ) as? Fish
+
+                    if (
+                        fishOrder?.isFree == true
+                    ) {
+
+                        0.0
+
+                    } else {
+
+                        (
+                                fish?.price?.times(
+                                    fishOrder?.quantity
+                                        ?.toFloat()
+                                        ?: 0f
+                                ) ?: 0.0
+                                ).toDouble()
+                    }
+                }
+
+            val totalFree = order.fishOrderId.sumOf { fishOrderId ->
                 val details =
-                    detailsList.find { it["fishOrder"]?.let { fishOrder -> (fishOrder as FishOrder).id == fishOrderId } == true }
+                    detailsList.find {
+                        it["fishOrder"]?.let { fishOrder ->
+                            (fishOrder as FishOrder).id == fishOrderId
+                        } == true
+                    }
+
                 val fishOrder = details?.get("fishOrder") as? FishOrder
-                val fish = details?.get("fish") as? Fish
+
                 if (fishOrder?.isFree == true) {
-                    0.0
+                    fishOrder.quantity
                 } else {
-                    (fish?.price?.times(fishOrder?.quantity?.toFloat() ?: 0f) ?: 0.0).toDouble()
+                    0
                 }
             }
 
+            // -------------------------------------------------
+            // PDF totals
+            // -------------------------------------------------
+
             document.add(table)
+
             document.add(Paragraph())
             document.add(Paragraph())
-            document.add(Paragraph("Total Quantity: $totalQuantity").setBold())
+
+            document.add(
+                Paragraph(
+                    "Total Quantity: $totalQuantity"
+                ).setBold()
+            )
+
+            document.add(
+                Paragraph(
+                    "Free Items within Total Quantity: $totalFree"
+                ).setBold()
+            )
+
             document.add(
                 Paragraph(
                     "Total Price (€): ${
@@ -290,10 +628,18 @@ class NewCalculationActivity : AppCompatActivity() {
                 Toast.LENGTH_SHORT
             ).show()
         }
+    }
 
+    // ---------------------------------------------------------
+    // dp helper
+    // ---------------------------------------------------------
 
-        fun Int.dpToPx(): Int {
-            return (this * Resources.getSystem().displayMetrics.density).toInt()
-        }
+    fun Int.dpToPx(): Int {
+        return (
+                this *
+                        Resources.getSystem()
+                            .displayMetrics
+                            .density
+                ).toInt()
     }
 }
