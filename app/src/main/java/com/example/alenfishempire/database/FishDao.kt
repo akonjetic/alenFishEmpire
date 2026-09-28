@@ -169,22 +169,27 @@ suspend fun getFilteredAndSortedOrders(
         insertFish(Fish(2, "Bakrena Tetra", 1.0f))
         insertFish(Fish(3, "Ember Tetra", 1.0f))
         insertFish(Fish(4, "Plamena Tetra", 1.0f))
-
-        insertFish(Fish(5, "Palmeri Tetra", 1.35f))
+        insertFish(Fish(5, "Muzel Tetra (Red Cherry)", 3.5f))
         insertFish(Fish(6, "Rhodostomus", 1.35f))
-        insertFish(Fish(7, "Crvena Fantom Tetra", 1.35f))
-        insertFish(Fish(8, "Crna Fantom Tetra", 1.35f))
-        insertFish(Fish(9, "Ornatus White Fin", 1.35f))
-
+        insertFish(Fish(7, "Barbus Titeya Long Fin", 1.2f))
+        insertFish(Fish(8, "Limun Tetra", 1.35f))
+        insertFish(Fish(9, "Ornatus White Fin", 1.5f))
         insertFish(Fish(10, "Color Tetra", 1.5f))
-
-        insertFish(Fish(11, "Congo Tetra", 2.0f))
-        insertFish(Fish(12, "Congo Albino", 2.0f))
-        insertFish(Fish(13, "Olovčice", 2.0f))
-
+        insertFish(Fish(11, "Kubotai rasbora", 2.0f))
+        insertFish(Fish(12, "Furcata", 2.0f))
+        insertFish(Fish(13, "Olovčice (Nannostomus Marginatus)", 2.0f))
         insertFish(Fish(14, "Galaxy Razbora", 2.65f))
-
-
+        insertFish(Fish(15, "Color Tetra 2", 1.3f))
+        insertFish(Fish(16, "Color Tetra 3", 1.1f))
+        insertFish(Fish(17, "Corydoras Paleatus", 1.0f))
+        insertFish(Fish(18, "Sterbai", 3.0f))
+        insertFish(Fish(19, "Ancistrus sp.", 1.0f))
+        insertFish(Fish(20, "Ancistrus red", 3.0f))
+        insertFish(Fish(21, "Ancistrus redblack", 2.5f))
+        insertFish(Fish(22, "Ancistrus redblack long fin", 4.0f))
+        insertFish(Fish(23, "Dostava", 8.0f))
+        insertFish(Fish(24, "Dostava 1", 5.0f))
+        insertFish(Fish(25, "Dostava 2", 10.0f))
     }
 }
 
